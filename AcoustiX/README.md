@@ -92,9 +92,12 @@ YAMLファイルで以下の内容を設定します。
 
 シミュレーション環境（シーン）を表すXMLファイル、plyファイルをBlenderで作成する必要があります。
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。 
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。 
 
-Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。  
+Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。 
+
+<img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
+
 
 シーンを自作したい場合は、  
 [自分でシミュレーション環境を構築する場合](#自分でシミュレーション環境を構築する場合)  
