@@ -32,6 +32,7 @@ pip install -r requirements.txt
 
 ## リポジトリ構成
 
+```text
 AcoustiX/
 ├ README.md                   AcoustiXを用いた多チャンネル音響シミュレーションの手順
 ├ LICENSE                     ライセンスファイル（MIT License）
@@ -43,6 +44,7 @@ AcoustiX/
 ├ pattern.py                  音源・マイクの指向性パターン
 ├ check_scene.ipynb           シミュレーション環境（シーン）の可視化
 └ sionna/                     Sionna ray tracingモジュール
+```
 
 ---
 
@@ -128,6 +130,7 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 
 ### 出力
 
+```text
 output_dir/
 ├ config.yml
 ├ speaker_data.json
@@ -144,6 +147,7 @@ output_dir/
 ├ tx_1/
 │  └ rx_0/ ...
 ├ ...
+```
 
 シミュレーション設定の記録のため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。
 各npzファイルの内容は以下のようになります。
