@@ -277,7 +277,6 @@ def ir_simulation(scene_path, rx_pos, tx_pos, rx_ori, tx_ori, simu_config):
             energy_ifft += tx_gain[i] * rx_gain[i] * energy * np.exp(-1j*2*np.pi/ir_len*np.arange(0, ir_len)*shift_samples) * np.exp(-shift_samples * attn_coeff)
 
         time_signal = np.real(np.fft.ifft(energy_ifft * np.fft.fft(sinc_template[:ir_len]))) + noise * (np.random.randn(ir_len))
-        energy_ifft = np.fft.fft(time_signal)
 
         if np.max(np.abs(time_signal)) < 50*noise: valid_mask.append(0)
         else: valid_mask.append(1)

@@ -67,7 +67,7 @@ AcoustiX/
 #### シミュレーション設定ファイル
 
 YAMLファイルで以下の内容を設定します。  
-具体的な書き方は`basic_config.yml`を参照してください。
+具体的な書き方は[`basic_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/basic_config.yml)を参照してください。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
@@ -82,9 +82,9 @@ YAMLファイルで以下の内容を設定します。
 | fs | 48000 | サンプリング周波数 [Hz] |
 | ir_len | 4800 | インパルス応答長（サンプル数） |
 | speed | 343.8 | 音速 [m/s] |
-| noise | 0.001 | 付加ノイズレベル |
-| tx_pattern | uniform | 音源指向性 |
-| rx_pattern | uniform | マイク指向性 |
+| noise | 0.001 | 波形に加えるノイズの大きさ |
+| tx_pattern | uniform | 送信機の指向性 |
+| rx_pattern | uniform | 受信機の指向性 |
 
 ---
 
@@ -92,7 +92,7 @@ YAMLファイルで以下の内容を設定します。
 
 シミュレーション環境（シーン）を表すXMLファイル、plyファイルをBlenderで作成する必要があります。
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用したシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。 
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。 
 
 Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。  
 
