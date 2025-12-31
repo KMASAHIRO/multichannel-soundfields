@@ -19,14 +19,7 @@ AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionn
 - Matplotlib 3.9
 - Mitsuba 3.4
 
-詳細な依存関係および正確なバージョンについては、
-`requirements.txt` を参照してください。
-
-### インストール
-
-以下のコマンドで依存関係をインストールします。
-
-pip install -r requirements.txt
+詳細な依存関係および正確なバージョンについては、[`requirements.txt`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/requirements.txt) を参照してください。
 
 ---
 
@@ -96,14 +89,14 @@ YAMLファイルで以下の内容を設定します。
 
 Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。 
 
-<img width="960" height="547" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
+<img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
 
 
 シーンを自作したい場合は[自分でシミュレーション環境を構築する場合](#自分でシミュレーション環境を構築する場合)を参照してください。
 
 ---
 
-#### 送信機データ
+#### 送信機データファイル
 
 送信機（スピーカー）の位置および向きを定義したJSONファイルを用意します。  
 シミュレーション設定で`tx_pattern`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
@@ -113,10 +106,11 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 |---|---|---|---|
 | positions | list | (N_tx, 3) | 送信機位置 [x, y, z] |
 | orientations | list | (N_tx, 3) | 送信機の向き [x, y, z] |
+| patterns | list | (N_tx,) | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 ---
 
-#### 受信機データ
+#### 受信機データファイル
 
 受信機（マイク）の位置および向きを定義したJSONファイルを用意します。  
 シミュレーション設定で`rx_pattern`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
@@ -126,6 +120,7 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 |---|---|---|---|
 | positions | list | (N_rx, 3) | 受信点中心位置 [x, y, z] |
 | orientations | list | (N_rx, 3) | 受信点の向き [x, y, z] |
+| patterns | list | (N_rx,) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 ---
 
@@ -166,9 +161,13 @@ output_dir/
 
 ---
 
-## 使い方
+## シミュレーション手順
 
-### シミュレーションの実行
+1. 依存関係のインストール
+
+```
+pip install -r requirements.txt
+```
 
 以下のコマンドでインパルス応答のシミュレーションを実行します。
 
