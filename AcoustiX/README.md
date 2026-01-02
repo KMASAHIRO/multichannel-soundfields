@@ -4,7 +4,7 @@ AcoustiXを用いた多チャンネル音響シミュレーション
 
 公式の[AcoustiX](https://github.com/penn-waves-lab/AcoustiX)実装をベースとして、軽微なバグの修正及び多チャンネル音響シミュレーションコードの追加を行いました。  
 
-AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionna ray tracing](https://github.com/NVlabs/sionna)を音響用に拡張したシミュレータです。
+AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionna ray tracing (Sionna RT)](https://github.com/NVlabs/sionna)を音響用に拡張したシミュレータです。
 
 ---
 
@@ -31,7 +31,11 @@ AcoustiX/
 ├ LICENSE                     ライセンスファイル（MIT License）
 ├ requirements.txt            動作環境情報
 ├ acoustic_absorptions.json   材料ごとの吸音率設定ファイル
+├ make_speaker_receiver_data.py  受信機・送信機データファイル生成
 ├ simu_input/                 シミュレーション入力データ
+│  ├ basic_config.yml         シミュレーション設定ファイル
+│  ├ speaker_data.json        送信機データファイル
+│  └ receiver_data.json       受信機データファイル
 ├ simu_utils.py               シミュレーション用の共通関数
 ├ simulation.py               多チャンネル音響のシミュレーション
 ├ pattern.py                  音源・マイクの指向性パターン
@@ -51,8 +55,8 @@ AcoustiX/
 |---|---|
 | シミュレーション設定ファイル | レイトレーシングの条件や指向性などの設定 |
 | シーンファイル | シミュレーション環境（シーン）の情報 |
-| 送信機データファイル | 送信機（スピーカー）の位置・向き |
-| 受信機データファイル | 受信点（マイク）の位置・向き |
+| 送信機データファイル | 送信機（スピーカー）の位置・向き・指向性 |
+| 受信機データファイル | 受信点（マイク）の位置・向き・指向性 |
 | 出力先ディレクトリ | シミュレーション結果の保存先 |
 
 ---
@@ -66,18 +70,16 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|
 | max_depth | 10 | 音線の最大反射回数 |
 | num_samples | 50000 | 放射する音線数 |
-| los | true | 直接音を計算するか |
-| reflection | true | 反射音を考慮するか |
-| diffraction | false | 回折効果を考慮するか |
-| scattering | true | 散乱効果を考慮するか |
+| los | True | 直接音を計算するか |
+| reflection | True | 反射音を考慮するか |
+| diffraction | False | 回折効果を考慮するか |
+| scattering | True | 散乱効果を考慮するか |
 | scat_prob | 0.00001 | 音線が散乱する確率 |
 | attn | 0.001 | 減衰係数 |
 | fs | 48000 | サンプリング周波数 [Hz] |
 | ir_len | 4800 | インパルス応答長（サンプル数） |
 | speed | 343.8 | 音速 [m/s] |
 | noise | 0.001 | 波形に加えるノイズの大きさ |
-| tx_pattern | uniform | 送信機の指向性 |
-| rx_pattern | uniform | 受信機の指向性 |
 
 ---
 
@@ -98,9 +100,8 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 
 #### 送信機データファイル
 
-送信機（スピーカー）の位置および向きを定義したJSONファイルを用意します。  
+送信機（スピーカー）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
 シミュレーション設定で`tx_pattern`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用したファイルは、`speaker_data.json`を参照してください。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
@@ -108,19 +109,22 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 | orientations | list | (N_tx, 3) | 送信機の向き [x, y, z] |
 | patterns | list | (N_tx,) | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上の橙点に配置されたスピーカーに対応するファイルは、[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/speaker_data.json)を参照してください。
+
 ---
 
 #### 受信機データファイル
 
-受信機（マイク）の位置および向きを定義したJSONファイルを用意します。  
+受信機（マイク）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
 シミュレーション設定で`rx_pattern`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用したファイルは、`receiver_data.json`を参照してください。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
 | positions | list | (N_rx, 3) | 受信点中心位置 [x, y, z] |
 | orientations | list | (N_rx, 3) | 受信点の向き [x, y, z] |
 | patterns | list | (N_rx,) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置されたマイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
 
 ---
 
@@ -157,39 +161,97 @@ output_dir/
 | position_tx    | ndarray | (3,)  | 送信機位置 [x, y, z]    |
 | orientation_rx | ndarray | (3,)  | 受信機の向き [x, y, z] |
 | orientation_tx | ndarray | (3,)  | 送信機の向き [x, y, z]   |
-
+| pattern_rx     | str     | ()  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+| pattern_tx     | str     | ()  | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 ---
 
 ## シミュレーション手順
 
-1. 依存関係のインストール
+1. リポジトリのクローン
+
+```
+git clone https://github.com/KMASAHIRO/multichannel-soundfields
+cd multichannel-soundfields/AcoustiX
+```
+
+2. 依存関係のインストール
 
 ```
 pip install -r requirements.txt
 ```
 
-以下のコマンドでインパルス応答のシミュレーションを実行します。
+3. シーンファイルのダウンロード（自作シーンを使用する場合はスキップ）
 
-python simulation.py
+```
+curl -L -o simu_input/AcoustiX_room.zip \
+  \[URL\]
 
-シミュレーション条件は `simu_config/` 以下の設定ファイルで指定します。
+unzip simu_input/AcoustiX_room.zip -d simu_input
+```
 
+4. シミュレーションの実行
+
+```
+python simulation.py \
+  --config simu_input/basic_config.yml \
+  --scene simu_input/AcoustiX_room/AcoustiX_room.xml \
+  --speaker simu_input/speaker_data.json \
+  --receiver simu_input/receiver_data.json \
+  --output_dir outputs
+```
 
 ---
 
 ## 自分でシミュレーション環境を構築する場合
 
-独自の音響環境を構築したい場合は、
-Sionna の公式チュートリアルを参照してください。
+以下の手順は、[Sionna RTの公式チュートリアル動画](https://www.youtube.com/watch?v=7xHLDxUaQ7c)を元にまとめたものです。
 
 Create your own scene using Blender (Sionna Official)  
-https://www.youtube.com/watch?v=7xHLDxUaQ7c
+
+1. 必要なソフトウェアのインストール
+
+シーンファイルを自作するには、Blender及びMitsuba-Blenderアドオンが必要です。それぞれ以下のバージョンを使用することを推奨します。
+
+- Blender 3.6.0
+  https://download.blender.org/release/Blender3.6/
+- Mitsuba-Blender v0.3.0
+  https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0
+
+まず、[Blender 3.6.0のダウンロードページ](https://download.blender.org/release/Blender3.6/)から自身の環境（OS/CPUアーキテクチャ）に応じてBlender をダウンロードし、インストールを完了してください。  
+次に、[Mitsuba-Blender v0.3.0](https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0)のAssetsにある`mitsuba-blender.zip`をダウンロードし、[インストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)に従って、Mitsuba-Blenderアドオンのインストールをしてください。
+
+2. 3Dオブジェクトの作成
+
+ここでは、`6.11×8.807×2.7 [m]`の直方体のオブジェクトを作成することとします。
+Blenderを立ち上げ、デフォルトで1辺2mの立方体とカメラ、ライトが用意されていることを確認します。  
+
+
+
+画面右上の`Scene Collection`から`Camera`と`Light`を選択し、Deleteボタンで削除します。  
+次に、`Cube`を選択し、Nキーを押します。サイドバーが現れるので、`Transform`→`Dimensions`の`X`、`Y`、`Z`をそれぞれ`6.11 m`、`8.807 m`、`2.7 m`に設定し、`Location`の`X`、`Y`、`Z`をそれぞれ`6.11/2 m`、`8.807/2 m`、`2.7/2 m`と入力します（下画像の赤枠参照）。すると、角の位置が座標上の原点となるような直方体ができます。
+
+
+このように、仮定するシミュレーション状況に合わせて自由に3Dオブジェクトを作成してください。複数のオブジェクトを作成しても問題ありません。
+
+
+3. 材料の設定
+
+3Dオブジェクトの各面に使用する材料を設定します。材料は[`acoustic_absorptions.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/acoustic_absorptions.json)のキーから選択してください。このjsonファイルは、各材料の周波数ごとの吸音率を定義しています。  
+
+
+例えば、直方体の各面に`Smooth concrete, painted or glazed`を使用する場合は、Blenderで`Cube`を選択した状態で右下パネルの`Material Properties`を開き、名前を`Smooth concrete, painted or glazed`とします。画像内右下で赤枠に囲まれたピンク色の円形マークが`Material Properties`であり、右側中央で赤枠に囲まれたテキストボックス部分に名前を入力します。
+
+
+4. Mitsuba形式でのシーンのエクスポート
+
+Blender画面左上の`File`→`Export`→`Mitsuba (.xml)`を選択します。ここで、`Mitsuba (.xml)`が表示されない場合は、[Mitsuba-Blenderアドオンのインストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)をもう一度参照してください。
+
+
+`Export IDs`、`Ignore Default Background`にチェックが入っていること、`Y Forward`、`Z Up`となっていることを確認し、適当な名前を付けて保存します（ここでは、AcoustiX_room.xml）。
 
 ---
 
 ## ライセンス
 
-本リポジトリは MIT License の条件に従って公開されています。
-
-LICENSE ファイルを参照してください。
+本リポジトリは MIT License に従って公開されています。詳細は[`LICENSE`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/LICENSE)を確認してください。
