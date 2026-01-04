@@ -1,0 +1,15 @@
+rt_config:
+  max_depth: 10        # 音線の最大反射回数
+  num_samples: 50000   # 放射する音線数
+  los: True            # 直接音を計算するか
+  reflection: True     # 反射音を考慮するか
+  diffraction: False   # 回折効果を考慮するか
+  scattering: True     # 散乱効果を考慮するか
+  scat_prob: 0.00001   # 音線が散乱する確率
+
+ir_config:
+  attn: 0.001          # 減衰係数
+  fs: 16000            # サンプリング周波数 [Hz]
+  ir_len: 1600         # インパルス応答長（サンプル数）
+  speed: 343.8         # 音速 [m/s]
+  noise: 0.0           # 波形に加えるノイズの大きさ

@@ -27,13 +27,13 @@ AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionn
 
 ```text
 AcoustiX/
-├ README.md                       AcoustiXを用いた多チャンネル音響シミュレーションの手順
+├ README.md                       ドキュメント
 ├ LICENSE                         ライセンスファイル（MIT License）
-├ requirements.txt                動作環境情報
+├ requirements.txt                依存関係
 ├ acoustic_absorptions.json       材料ごとの吸音率設定ファイル
 ├ make_speaker_receiver_data.py   受信機・送信機データファイル生成
 ├ simu_input/                     シミュレーション入力データ
-│  ├ basic_config.yml               シミュレーション設定ファイル
+│  ├ config.yml                     シミュレーション設定ファイル
 │  ├ speaker_data.json              送信機データファイル
 │  └ receiver_data.json             受信機データファイル
 ├ simu_utils.py                   シミュレーション用の共通関数
@@ -64,7 +64,7 @@ AcoustiX/
 #### シミュレーション設定ファイル
 
 YAMLファイルで以下の内容を設定します。  
-具体的な書き方は[`basic_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/basic_config.yml)を参照してください。
+具体的な書き方は[`config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/config.yml)を参照してください。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
@@ -76,10 +76,10 @@ YAMLファイルで以下の内容を設定します。
 | scattering | True | 散乱効果を考慮するか |
 | scat_prob | 0.00001 | 音線が散乱する確率 |
 | attn | 0.001 | 減衰係数 |
-| fs | 48000 | サンプリング周波数 [Hz] |
-| ir_len | 4800 | インパルス応答長（サンプル数） |
+| fs | 16000 | サンプリング周波数 [Hz] |
+| ir_len | 1600 | インパルス応答長（サンプル数） |
 | speed | 343.8 | 音速 [m/s] |
-| noise | 0.001 | 波形に加えるノイズの大きさ |
+| noise | 0.0 | 波形に加えるノイズの大きさ |
 
 ---
 
@@ -124,7 +124,7 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 | orientations | list | (N_rx, 3) | 受信機の向き [x, y, z] |
 | patterns | list | (N_rx,) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置されたマイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
@@ -196,7 +196,7 @@ unzip simu_input/AcoustiX_room.zip -d simu_input
 
 ```
 python simulation.py \
-  --config simu_input/basic_config.yml \
+  --config simu_input/config.yml \
   --scene simu_input/AcoustiX_room/AcoustiX_room.xml \
   --speaker simu_input/speaker_data.json \
   --receiver simu_input/receiver_data.json \

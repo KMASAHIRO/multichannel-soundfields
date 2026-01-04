@@ -1,0 +1,8 @@
+room:
+  room_dim: [6.110, 8.807, 2.7]    # 部屋寸法 [m] (x, y, z)
+  max_order: 10                    # 反射次数
+  e_absorption: 0.0055             # 壁面の吸音率
+
+signal:
+  sampling_rate: 16000             # サンプリング周波数 [Hz]
+  ir_len: 1600                     # 保存するインパルス応答長（サンプル数）
