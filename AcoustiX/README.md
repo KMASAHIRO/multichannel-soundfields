@@ -53,7 +53,7 @@ AcoustiX/
 
 | 入力 | 説明 |
 |---|---|
-| シミュレーション設定ファイル | レイトレーシングの条件や指向性などの設定 |
+| シミュレーション設定ファイル | シミュレーション条件の設定 |
 | シーンファイル | シミュレーション環境（シーン）の情報 |
 | 送信機データファイル | 送信機（スピーカー）の位置・向き・指向性 |
 | 受信機データファイル | 受信点（マイク）の位置・向き・指向性 |
@@ -88,19 +88,17 @@ YAMLファイルで以下の内容を設定します。
 シミュレーション環境（シーン）を表すXMLファイル、plyファイルをBlenderで作成する必要があります。
 
 [論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。 
-
-Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。 
+Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。   
+シーンを自作したい場合は[シーンを自作する場合](#シーンを自作する場合)を参照してください。
 
 <img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
-
-シーンを自作したい場合は[自分でシミュレーション環境を構築する場合](#自分でシミュレーション環境を構築する場合)を参照してください。
 
 ---
 
 #### 送信機データファイル
 
 送信機（スピーカー）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
-シミュレーション設定で`tx_pattern`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
+指向性パターン`patterns`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
@@ -118,12 +116,12 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 #### 受信機データファイル
 
 受信機（マイク）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
-シミュレーション設定で`rx_pattern`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
+指向性パターン`patterns`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
-| positions | list | (N_rx, 3) | 受信点中心位置 [x, y, z] |
-| orientations | list | (N_rx, 3) | 受信点の向き [x, y, z] |
+| positions | list | (N_rx, 3) | 受信機中心位置 [x, y, z] |
+| orientations | list | (N_rx, 3) | 受信機の向き [x, y, z] |
 | patterns | list | (N_rx,) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 [論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置されたマイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
@@ -141,8 +139,8 @@ output_dir/
 ├ config.yml
 ├ speaker_data.json
 ├ receiver_data.json
-├ tx_0/                        # 送信機インデックス（0,1,2,...）
-│  ├ rx_0/                     # 受信点インデックス（0,1,2,...）
+├ tx_0/                        # 送信機のインデックス（0,1,2,...）
+│  ├ rx_0/                     # 受信機のインデックス（0,1,2,...）
 │  │  ├ ir_000000.npz          # チャンネル0
 │  │  ├ ir_000001.npz          # チャンネル1
 │  │  ├ ...
@@ -155,7 +153,7 @@ output_dir/
 ├ ...
 ```
 
-シミュレーション設定の記録のため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。
+シミュレーション条件を保存するため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。
 各npzファイルの内容は以下のようになります。
 
 | key            | dtype   | shape | 内容                 |
@@ -207,7 +205,7 @@ python simulation.py \
 
 ---
 
-## 自分でシミュレーション環境を構築する場合
+## シーンを自作する場合
 
 以下の手順は、[Sionna RTの公式チュートリアル動画](https://www.youtube.com/watch?v=7xHLDxUaQ7c)を元にまとめたものです。
 
@@ -230,8 +228,8 @@ Blenderを立ち上げ、デフォルトで1辺2mの立方体とカメラ、ラ�
 
 <img width="1919" height="1093" alt="1_start_menu" src="https://github.com/user-attachments/assets/5aa6f87b-5f45-4329-9ab8-8a768a205cb8" />
 
-画面右上の`Scene Collection`から`Camera`と`Light`を選択し、Deleteボタンで削除します。  
-次に、`Cube`を選択し、Nキーを押します。サイドバーが現れるので、`Transform`→`Dimensions`の`X`、`Y`、`Z`をそれぞれ`6.11 m`、`8.807 m`、`2.7 m`に設定し、`Location`の`X`、`Y`、`Z`をそれぞれ`6.11/2 m`、`8.807/2 m`、`2.7/2 m`と入力します（下画像の赤枠参照）。すると、角の位置が座標上の原点となるような直方体ができます。
+画面右上の`Scene Collection`から`Camera`と`Light`を選択し、キーボードのDeleteボタンで削除します。  
+次に、画面中央の立方体をクリックし、キーボードのNキーを押します。サイドバーが現れるので、`Transform`→`Dimensions`の`X`、`Y`、`Z`をそれぞれ`6.11 m`、`8.807 m`、`2.7 m`に設定し、`Location`の`X`、`Y`、`Z`をそれぞれ`6.11/2 m`、`8.807/2 m`、`2.7/2 m`と入力します（下画像の赤枠参照）。すると、角の位置が座標上の原点となるような直方体ができます。
 
 <img width="1919" height="1092" alt="2_change_room_dim" src="https://github.com/user-attachments/assets/7890ff47-35d8-4e5f-adde-40ee2319f7f5" />
 
@@ -244,7 +242,7 @@ Blenderを立ち上げ、デフォルトで1辺2mの立方体とカメラ、ラ�
 3Dオブジェクトの各面に使用する材料を設定します。材料は[`acoustic_absorptions.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/acoustic_absorptions.json)のキーから選択してください。このjsonファイルは、各材料の周波数ごとの吸音率を定義しています。  
 
 
-例えば、直方体の各面に`Smooth concrete, painted or glazed`を使用する場合は、Blenderで`Cube`を選択した状態で右下パネルの`Material Properties`を開き、名前を`Smooth concrete, painted or glazed`とします。画像内右下で赤枠に囲まれたピンク色の円形マークが`Material Properties`であり、右側中央で赤枠に囲まれたテキストボックス部分に名前を入力します。
+例えば、直方体の各面に`Smooth concrete, painted or glazed`を使用する場合は、Blenderで直方体を選択した状態で右下パネルの`Material Properties`を開き、名前を`Smooth concrete, painted or glazed`とします。画像内右下で赤枠に囲まれたピンク色の円形マークが`Material Properties`であり、画像右側中央で赤枠に囲まれたテキストボックス部分に名前を入力します。
 
 <img width="1919" height="1092" alt="3_set_mat_param" src="https://github.com/user-attachments/assets/d9844dff-b9ee-4d16-9afb-706fc4385a2c" />
 
@@ -258,6 +256,10 @@ Blender画面左上の`File`→`Export`→`Mitsuba (.xml)`を選択します。�
 `Export IDs`、`Ignore Default Background`にチェックが入っていること、`Y Forward`、`Z Up`となっていることを確認し、適当な名前を付けて保存します（ここでは、AcoustiX_room.xml）。
 
 <img width="1232" height="812" alt="5_export_settings" src="https://github.com/user-attachments/assets/22ef1b24-98f1-40fd-8a2f-b934c2dc2bb3" />
+
+### 5. 出力ファイルの確認
+
+エクスポート時に名前を付けたxmlファイルの他に、同階層のmeshesディレクトリ以下にplyファイルが存在することを確認します。シミュレーション時にAcoustiXに入力するのはxmlファイルのパスだけですが、内部的にplyファイルも使用するので、ファイルを移動させる場合はディレクトリ構成を崩さずにまとめて移動してください。
 
 ---
 
