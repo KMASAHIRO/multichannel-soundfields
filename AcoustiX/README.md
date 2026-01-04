@@ -27,20 +27,20 @@ AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionn
 
 ```text
 AcoustiX/
-├ README.md                   AcoustiXを用いた多チャンネル音響シミュレーションの手順
-├ LICENSE                     ライセンスファイル（MIT License）
-├ requirements.txt            動作環境情報
-├ acoustic_absorptions.json   材料ごとの吸音率設定ファイル
-├ make_speaker_receiver_data.py  受信機・送信機データファイル生成
-├ simu_input/                 シミュレーション入力データ
-│  ├ basic_config.yml         シミュレーション設定ファイル
-│  ├ speaker_data.json        送信機データファイル
-│  └ receiver_data.json       受信機データファイル
-├ simu_utils.py               シミュレーション用の共通関数
-├ simulation.py               多チャンネル音響のシミュレーション
-├ pattern.py                  音源・マイクの指向性パターン
-├ check_scene.ipynb           シミュレーション環境（シーン）の可視化
-└ sionna/                     Sionna ray tracingモジュール
+├ README.md                       AcoustiXを用いた多チャンネル音響シミュレーションの手順
+├ LICENSE                         ライセンスファイル（MIT License）
+├ requirements.txt                動作環境情報
+├ acoustic_absorptions.json       材料ごとの吸音率設定ファイル
+├ make_speaker_receiver_data.py   受信機・送信機データファイル生成
+├ simu_input/                     シミュレーション入力データ
+│  ├ basic_config.yml             シミュレーション設定ファイル
+│  ├ speaker_data.json            送信機データファイル
+│  └ receiver_data.json           受信機データファイル
+├ simu_utils.py                   シミュレーション用の共通関数
+├ simulation.py                   多チャンネル音響のシミュレーション
+├ pattern.py                      音源・マイクの指向性パターン
+├ check_scene.ipynb               シミュレーション環境（シーン）の可視化
+└ sionna/                         Sionna ray tracingモジュール
 ```
 
 ---
