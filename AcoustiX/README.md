@@ -93,7 +93,6 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 
 <img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
 
-
 シーンを自作したい場合は[自分でシミュレーション環境を構築する場合](#自分でシミュレーション環境を構築する場合)を参照してください。
 
 ---
@@ -111,6 +110,9 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 
 [論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上の橙点に配置されたスピーカーに対応するファイルは、[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/speaker_data.json)を参照してください。
 
+<img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
+
+
 ---
 
 #### 受信機データファイル
@@ -125,6 +127,8 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 | patterns | list | (N_rx,) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 [論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置されたマイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
+
+<img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
 ---
 
@@ -185,7 +189,7 @@ pip install -r requirements.txt
 
 ```
 curl -L -o simu_input/AcoustiX_room.zip \
-  \[URL\]
+  [URL]
 
 unzip simu_input/AcoustiX_room.zip -d simu_input
 ```
@@ -207,48 +211,53 @@ python simulation.py \
 
 以下の手順は、[Sionna RTの公式チュートリアル動画](https://www.youtube.com/watch?v=7xHLDxUaQ7c)を元にまとめたものです。
 
-Create your own scene using Blender (Sionna Official)  
-
-1. 必要なソフトウェアのインストール
+### 1. 必要なソフトウェアのインストール
 
 シーンファイルを自作するには、Blender及びMitsuba-Blenderアドオンが必要です。それぞれ以下のバージョンを使用することを推奨します。
 
-- Blender 3.6.0
+- Blender 3.6.0  
   https://download.blender.org/release/Blender3.6/
-- Mitsuba-Blender v0.3.0
+- Mitsuba-Blender v0.3.0  
   https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0
 
-まず、[Blender 3.6.0のダウンロードページ](https://download.blender.org/release/Blender3.6/)から自身の環境（OS/CPUアーキテクチャ）に応じてBlender をダウンロードし、インストールを完了してください。  
+まず、[Blender 3.6のダウンロードページ](https://download.blender.org/release/Blender3.6/)から自身の環境（OS/CPUアーキテクチャ）に応じてBlender 3.6.0 をダウンロードし、インストールを完了してください。  
 次に、[Mitsuba-Blender v0.3.0](https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0)のAssetsにある`mitsuba-blender.zip`をダウンロードし、[インストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)に従って、Mitsuba-Blenderアドオンのインストールをしてください。
 
-2. 3Dオブジェクトの作成
+### 2. 3Dオブジェクトの作成
 
 ここでは、`6.11×8.807×2.7 [m]`の直方体のオブジェクトを作成することとします。
 Blenderを立ち上げ、デフォルトで1辺2mの立方体とカメラ、ライトが用意されていることを確認します。  
 
-
+<img width="1919" height="1093" alt="1_start_menu" src="https://github.com/user-attachments/assets/5aa6f87b-5f45-4329-9ab8-8a768a205cb8" />
 
 画面右上の`Scene Collection`から`Camera`と`Light`を選択し、Deleteボタンで削除します。  
 次に、`Cube`を選択し、Nキーを押します。サイドバーが現れるので、`Transform`→`Dimensions`の`X`、`Y`、`Z`をそれぞれ`6.11 m`、`8.807 m`、`2.7 m`に設定し、`Location`の`X`、`Y`、`Z`をそれぞれ`6.11/2 m`、`8.807/2 m`、`2.7/2 m`と入力します（下画像の赤枠参照）。すると、角の位置が座標上の原点となるような直方体ができます。
+
+<img width="1919" height="1092" alt="2_change_room_dim" src="https://github.com/user-attachments/assets/7890ff47-35d8-4e5f-adde-40ee2319f7f5" />
 
 
 このように、仮定するシミュレーション状況に合わせて自由に3Dオブジェクトを作成してください。複数のオブジェクトを作成しても問題ありません。
 
 
-3. 材料の設定
+### 3. 材料の設定
 
 3Dオブジェクトの各面に使用する材料を設定します。材料は[`acoustic_absorptions.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/acoustic_absorptions.json)のキーから選択してください。このjsonファイルは、各材料の周波数ごとの吸音率を定義しています。  
 
 
 例えば、直方体の各面に`Smooth concrete, painted or glazed`を使用する場合は、Blenderで`Cube`を選択した状態で右下パネルの`Material Properties`を開き、名前を`Smooth concrete, painted or glazed`とします。画像内右下で赤枠に囲まれたピンク色の円形マークが`Material Properties`であり、右側中央で赤枠に囲まれたテキストボックス部分に名前を入力します。
 
+<img width="1919" height="1092" alt="3_set_mat_param" src="https://github.com/user-attachments/assets/d9844dff-b9ee-4d16-9afb-706fc4385a2c" />
 
-4. Mitsuba形式でのシーンのエクスポート
+### 4. Mitsuba形式でのシーンのエクスポート
 
 Blender画面左上の`File`→`Export`→`Mitsuba (.xml)`を選択します。ここで、`Mitsuba (.xml)`が表示されない場合は、[Mitsuba-Blenderアドオンのインストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)をもう一度参照してください。
 
+<img width="1919" height="1090" alt="4_mitsuba_export_button" src="https://github.com/user-attachments/assets/b33ad8f1-9031-4d23-ace0-f50679bae5ba" />
+
 
 `Export IDs`、`Ignore Default Background`にチェックが入っていること、`Y Forward`、`Z Up`となっていることを確認し、適当な名前を付けて保存します（ここでは、AcoustiX_room.xml）。
+
+<img width="1232" height="812" alt="5_export_settings" src="https://github.com/user-attachments/assets/22ef1b24-98f1-40fd-8a2f-b934c2dc2bb3" />
 
 ---
 
