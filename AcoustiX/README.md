@@ -2,7 +2,7 @@
 
 AcoustiXを用いた多チャンネル音響シミュレーション  
 
-公式の[AcoustiX](https://github.com/penn-waves-lab/AcoustiX)実装をベースとして、軽微なバグの修正及び多チャンネル音響シミュレーションコードの追加を行いました。  
+[AcoustiX](https://github.com/penn-waves-lab/AcoustiX)をベースとして、軽微なバグの修正及び多チャンネル音響シミュレーションコードの追加を行いました。  
 
 AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionna ray tracing (Sionna RT)](https://github.com/NVlabs/sionna)を音響用に拡張したシミュレータです。
 
