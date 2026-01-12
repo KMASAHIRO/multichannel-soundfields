@@ -64,7 +64,8 @@ YAMLファイルで以下の内容を設定します。
 
 #### 送信機データファイル
 
-送信機（スピーカー）の位置を定義したJSONファイルを用意します。
+送信機（スピーカー）の位置を定義したJSONファイルを用意します。  
+`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はN_chチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
@@ -79,11 +80,12 @@ YAMLファイルで以下の内容を設定します。
 
 #### 受信機データファイル
 
-受信機（マイク）の位置、向き、指向性パターンを定義したJSONファイルを用意します。
+受信機（マイク）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
+`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はN_chチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
-| positions | list | (N_rx, 3) | 受信機中心位置 [x, y, z] |
+| positions | list | (N_rx, N_ch, 3) | 受信機位置 [x, y, z] |
 
 [論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/simu_input/receiver_data.json)を参照してください。
 
@@ -101,16 +103,12 @@ output_dir/
 ├ speaker_data.json
 ├ receiver_data.json
 ├ tx_0/                        # 送信機のインデックス（0,1,2,...）
-│  ├ rx_0/                     # 受信機のインデックス（0,1,2,...）
-│  │  ├ ir_000000.npz          # チャンネル0
-│  │  ├ ir_000001.npz          # チャンネル1
-│  │  ├ ...
-│  ├ rx_1/
-│  │  ├ ir_000000.npz
-│  │  ├ ...
+│  ├ rx_0.npz                  # 受信機のインデックス（0,1,2,...）
+│  ├ rx_1.npz
 │  ├ ...
 ├ tx_1/
-│  └ rx_0/ ...
+│  ├ rx_0.npz
+│  ├ ...
 ├ ...
 ```
 
@@ -119,8 +117,8 @@ output_dir/
 
 | key            | dtype   | shape | 内容                 |
 | -------------- | ------- | ----- | ------------------ |
-| ir             | ndarray | (ir_len,)  | インパルス応答の波形      |
-| position_rx    | ndarray | (3,)  | 受信機位置 [x, y, z]  |
+| ir             | ndarray | (N_ch, ir_len)  | インパルス応答の波形      |
+| position_rx    | ndarray | (N_ch, 3)  | 受信機位置 [x, y, z]  |
 | position_tx    | ndarray | (3,)  | 送信機位置 [x, y, z]    |
 
 ---
