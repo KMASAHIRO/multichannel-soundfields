@@ -1,14 +1,13 @@
-doa_metric:
-  algorithm: NormMUSIC               # metric
-  fallback_value: 999.0              # value used if metric is missing
-
-training_param:
-  # === runtime / training control ===
+setting:
   gpus: 4                            # number of GPUs
+  model_type: NAF+                   # model type
+  dir_ch: 8                          # number of direction channels
   epochs: 200                        # total epochs
-  resume: 0                          # resume flag
+  resume: False                      # resume flag
   batch_size: 20                     # batch size
+  save_best_k: 10                    # keep top-k checkpoints
 
+param:
   # === loss weights (fixed only) ===
   mag_alpha: 1.0                     # magnitude loss scale
   phase_alpha: 1.0                   # (from search_space) phase loss scale
@@ -24,12 +23,10 @@ training_param:
   pixel_count: 2000                  # number of pixels per forward
 
   # === network / architecture (fixed only) ===
-  model_type: NAF+                   # model type
   layers: 8                          # number of MLP layers
   layers_residual: 1                 # residual blocks
   features: 256                      # hidden feature width
   grid_features: 64                  # grid feature dimension
-  dir_ch: 4                          # number of direction channels
   activation_func_name: default      # activation function
 
   # === grid / kernel parameters (fixed only) ===
@@ -47,5 +44,5 @@ training_param:
   embed_freq_num_freqs: 10           # number of frequencies for frequency embeddings
   embed_freq_max_freq: 10            # max_freq for frequency embedding
 
-  # === saving ===
-  save_best_k: 10                    # keep top-k checkpoints
+doa_metric:
+  algorithm: NormMUSIC               # metric

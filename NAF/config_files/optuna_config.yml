@@ -2,13 +2,21 @@ study:
   study_name: naf_optuna_study        # Optuna study name
   direction: minimize                # objective direction
   n_trials: 50                       # number of trials
-  sampler: tpe                       # sampler type (tpe / random / cmaes)
 
 doa_metric:
   algorithm: NormMUSIC               # metric
   fallback_value: 999.0              # value used if metric is missing
 
-training_fixed:
+setting:
+  gpus: 4                            # number of GPUs
+  model_type: NAF+                   # model type
+  dir_ch: 8                          # number of direction channels
+  epochs: 200                        # total epochs
+  resume: False                      # resume flag
+  batch_size: 20                     # batch size
+  save_best_k: 10                    # keep top-k checkpoints
+
+fixed:
   # === runtime / training control ===
   gpus: 4                            # number of GPUs
   epochs: 200                        # total epochs
