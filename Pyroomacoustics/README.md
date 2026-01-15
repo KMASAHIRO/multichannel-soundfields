@@ -32,6 +32,33 @@ Pyroomacoustics/
 
 ---
 
+## シミュレーション手順
+
+1. リポジトリのクローン
+
+```
+git clone https://github.com/KMASAHIRO/multichannel-soundfields
+cd multichannel-soundfields/Pyroomacoustics
+```
+
+2. 依存関係のインストール
+
+```
+pip install -r requirements.txt
+```
+
+3. シミュレーションの実行
+
+```
+python simulation.py \
+  --config simu_input/config.yml \
+  --speaker simu_input/speaker_data.json \
+  --receiver simu_input/receiver_data.json \
+  --output_dir outputs
+```
+
+---
+
 ## 入出力
 
 ### 入力
@@ -40,10 +67,10 @@ Pyroomacoustics/
 
 | 入力 | 説明 |
 |---|---|
-| シミュレーション設定ファイル | シミュレーション条件の設定 |
-| 送信機データファイル | 送信機（スピーカー）の位置 |
-| 受信機データファイル | 受信機（マイクロフォンアレイ）の位置 |
-| 出力先ディレクトリ | シミュレーション結果の保存先 |
+| [シミュレーション設定ファイル](#シミュレーション設定ファイル) | シミュレーション条件の設定 |
+| [送信機データファイル](#送信機データファイル) | 送信機（スピーカー）の位置 |
+| [受信機データファイル](#受信機データファイル) | 受信機（マイクロフォンアレイ）の位置 |
+| [出力先ディレクトリ](#出力先ディレクトリ) | シミュレーション結果の保存先 |
 
 ---
 
@@ -120,30 +147,3 @@ output_dir/
 | ir             | ndarray | (N_ch, ir_len)  | インパルス応答の波形      |
 | position_rx    | ndarray | (N_ch, 3)  | 受信機位置 [x, y, z]  |
 | position_tx    | ndarray | (3,)  | 送信機位置 [x, y, z]    |
-
----
-
-## シミュレーション手順
-
-1. リポジトリのクローン
-
-```
-git clone https://github.com/KMASAHIRO/multichannel-soundfields
-cd multichannel-soundfields/Pyroomacoustics
-```
-
-2. 依存関係のインストール
-
-```
-pip install -r requirements.txt
-```
-
-3. シミュレーションの実行
-
-```
-python simulation.py \
-  --config simu_input/config.yml \
-  --speaker simu_input/speaker_data.json \
-  --receiver simu_input/receiver_data.json \
-  --output_dir outputs
-```

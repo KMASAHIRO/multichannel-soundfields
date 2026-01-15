@@ -67,7 +67,7 @@ NAF/
 #### データセットディレクトリ
 
 `dataset_dir`に、以下のディレクトリ構成で多チャンネルインパルス応答の波形データを用意します。  
-[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/real_data)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/AcoustiX)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/Pyroomacoustics)によるシミュレーションデータを使う場合は、各出力先ディレクトリをそのまま使用してください。
+[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/real_data)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/Pyroomacoustics#出力)によるシミュレーションデータを使う場合は、各出力先ディレクトリをそのまま使用してください。
 
 ```text
 dataset_dir/
@@ -93,7 +93,7 @@ dataset_dir/
 
 YAMLファイルで以下の内容を設定します。  
 具体的な書き方は[`preprocess_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/config_files/preprocess_config.yml)を参照してください。  
-NAFのモデルタイプにおける``"NAF+"`は、`"NAF"`を多チャンネルデータ用に拡張したモデルです。
+NAFのモデルタイプにおける`NAF+`は、`NAF`を多チャンネルデータ用に拡張したモデルです。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|

@@ -45,6 +45,43 @@ AcoustiX/
 
 ---
 
+## シミュレーション手順
+
+1. リポジトリのクローン
+
+```
+git clone https://github.com/KMASAHIRO/multichannel-soundfields
+cd multichannel-soundfields/AcoustiX
+```
+
+2. 依存関係のインストール
+
+```
+pip install -r requirements.txt
+```
+
+3. シーンファイルのダウンロード（自作シーンを使用する場合はスキップ）
+
+```
+curl -L -o simu_input/AcoustiX_room.zip \
+  [URL]
+
+unzip simu_input/AcoustiX_room.zip -d simu_input
+```
+
+4. シミュレーションの実行
+
+```
+python simulation.py \
+  --config simu_input/config.yml \
+  --scene simu_input/AcoustiX_room/AcoustiX_room.xml \
+  --speaker simu_input/speaker_data.json \
+  --receiver simu_input/receiver_data.json \
+  --output_dir outputs
+```
+
+---
+
 ## 入出力
 
 ### 入力
@@ -53,11 +90,11 @@ AcoustiX/
 
 | 入力 | 説明 |
 |---|---|
-| シミュレーション設定ファイル | シミュレーション条件の設定 |
-| シーンファイル | シミュレーション環境（シーン）の情報 |
-| 送信機データファイル | 送信機（スピーカー）の位置・向き・指向性 |
-| 受信機データファイル | 受信機（マイクロフォンアレイ）の位置・向き・指向性 |
-| 出力先ディレクトリ | シミュレーション結果の保存先 |
+| [シミュレーション設定ファイル](#シミュレーション設定ファイル) | シミュレーション条件の設定 |
+| [シーンファイル](#シーンファイル) | シミュレーション環境（シーン）の情報 |
+| [送信機データファイル](#送信機データファイル) | 送信機（スピーカー）の位置・向き・指向性 |
+| [受信機データファイル](#受信機データファイル) | 受信機（マイクロフォンアレイ）の位置・向き・指向性 |
+| [出力先ディレクトリ](#出力先ディレクトリ) | シミュレーション結果の保存先 |
 
 ---
 
@@ -87,8 +124,8 @@ YAMLファイルで以下の内容を設定します。
 
 シミュレーション環境（シーン）を表すXMLファイル、plyファイルをBlenderで作成する必要があります。
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。 
-Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。   
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。  
+Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。  
 シーンを自作したい場合は[シーンを自作する場合](#シーンを自作する場合)を参照してください。
 
 <img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
@@ -163,43 +200,6 @@ output_dir/
 | orientation_tx | ndarray | (3,)  | 送信機の向き [x, y, z]   |
 | pattern_rx     | ndarray     | (N_ch,)  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 | pattern_tx     | ndarray     | ()  | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
-
----
-
-## シミュレーション手順
-
-1. リポジトリのクローン
-
-```
-git clone https://github.com/KMASAHIRO/multichannel-soundfields
-cd multichannel-soundfields/AcoustiX
-```
-
-2. 依存関係のインストール
-
-```
-pip install -r requirements.txt
-```
-
-3. シーンファイルのダウンロード（自作シーンを使用する場合はスキップ）
-
-```
-curl -L -o simu_input/AcoustiX_room.zip \
-  [URL]
-
-unzip simu_input/AcoustiX_room.zip -d simu_input
-```
-
-4. シミュレーションの実行
-
-```
-python simulation.py \
-  --config simu_input/config.yml \
-  --scene simu_input/AcoustiX_room/AcoustiX_room.xml \
-  --speaker simu_input/speaker_data.json \
-  --receiver simu_input/receiver_data.json \
-  --output_dir outputs
-```
 
 ---
 
