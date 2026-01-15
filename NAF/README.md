@@ -67,7 +67,7 @@ NAF/
 #### データセットディレクトリ
 
 `dataset_dir`に、以下のディレクトリ構成で多チャンネルインパルス応答の波形データを用意します。  
-[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/real_data)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/Pyroomacoustics#出力)によるシミュレーションデータを使う場合は、各出力先ディレクトリをそのまま使用してください。
+[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/real_data)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/AcoustiX#output)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/Pyroomacoustics#出力)によるシミュレーションデータを使う場合は、各出力先ディレクトリをそのまま使用してください。
 
 ```text
 dataset_dir/
