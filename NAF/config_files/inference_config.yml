@@ -1,0 +1,27 @@
+model_param:
+  # === data / chunking ===
+  pixel_count: 2000                  # 1 forward あたりに処理する (freq×time) 点数
+
+  # === network / architecture ===
+  model_type: NAF+                   # model type
+  dir_ch: 4                          # 出力チャンネル数（方向チャネル）
+  layers: 8                          # MLP レイヤ数
+  layers_residual: 1                 # Residual ブロック数
+  features: 256                      # 中間特徴量次元
+  grid_features: 64                  # グリッド特徴量次元
+  activation_func_name: default      # 活性化関数
+
+  # === grid / kernel parameters ===
+  grid_gap: 0.25                     # 初期グリッド間隔
+  bandwith_init: 0.25                # 初期カーネル幅
+  position_float: 0.1                # グリッド位置の微調整範囲
+  min_bandwidth: 0.1                 # カーネル幅の下限
+  max_bandwidth: 0.5                 # カーネル幅の上限
+
+  # === embedding (embedding_module_log) ===
+  embed_xyz_num_freqs: 10            # xyz 位置埋め込みの周波数数
+  embed_xyz_max_freq: 7              # xyz 埋め込みの最大周波数
+  embed_time_num_freqs: 10           # 時間埋め込みの周波数数
+  embed_time_max_freq: 10            # 時間埋め込みの最大周波数
+  embed_freq_num_freqs: 10           # 周波数埋め込みの周波数数
+  embed_freq_max_freq: 10            # 周波数埋め込みの最大周波数

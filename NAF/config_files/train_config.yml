@@ -1,0 +1,51 @@
+doa_metric:
+  algorithm: NormMUSIC               # metric
+  fallback_value: 999.0              # value used if metric is missing
+
+training_param:
+  # === runtime / training control ===
+  gpus: 4                            # number of GPUs
+  epochs: 200                        # total epochs
+  resume: 0                          # resume flag
+  batch_size: 20                     # batch size
+
+  # === loss weights (fixed only) ===
+  mag_alpha: 1.0                     # magnitude loss scale
+  phase_alpha: 1.0                   # (from search_space) phase loss scale
+
+  # === optimization (fixed part only) ===
+  lr_init: 1.0e-3                    # (from search_space) initial learning rate
+  lr_decay: 1.0e-1                   # (from search_space) lr decay factor
+  weight_decay_grid: 1.0e-2          # weight decay for grid parameters
+  weight_decay_main: 0.0             # weight decay for non-grid parameters
+  reg_eps: 0.05                      # (from search_space) regularization epsilon
+
+  # === data / sampling (fixed only) ===
+  pixel_count: 2000                  # number of pixels per forward
+
+  # === network / architecture (fixed only) ===
+  model_type: NAF+                   # model type
+  layers: 8                          # number of MLP layers
+  layers_residual: 1                 # residual blocks
+  features: 256                      # hidden feature width
+  grid_features: 64                  # grid feature dimension
+  dir_ch: 4                          # number of direction channels
+  activation_func_name: default      # activation function
+
+  # === grid / kernel parameters (fixed only) ===
+  grid_gap: 0.25                     # grid spacing
+  bandwith_init: 0.25                # initial grid bandwidth
+  position_float: 0.1                # grid position float range
+  min_bandwidth: 0.1                 # minimum bandwidth
+  max_bandwidth: 0.5                 # maximum bandwidth
+
+  # === embedding (embedding_module_log) ===
+  embed_xyz_num_freqs: 10            # number of frequencies for xyz embeddings
+  embed_xyz_max_freq: 7              # max_freq for xyz embedding
+  embed_time_num_freqs: 10           # number of frequencies for time embeddings
+  embed_time_max_freq: 10            # max_freq for time embedding
+  embed_freq_num_freqs: 10           # number of frequencies for frequency embeddings
+  embed_freq_max_freq: 10            # max_freq for frequency embedding
+
+  # === saving ===
+  save_best_k: 10                    # keep top-k checkpoints
