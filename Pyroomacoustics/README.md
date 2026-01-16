@@ -144,6 +144,6 @@ output_dir/
 
 | key            | dtype   | shape | 内容                 |
 | -------------- | ------- | ----- | ------------------ |
-| ir             | ndarray | (N_ch, ir_len)  | インパルス応答の波形      |
-| position_rx    | ndarray | (N_ch, 3)  | 受信機位置 [x, y, z]  |
-| position_tx    | ndarray | (3,)  | 送信機位置 [x, y, z]    |
+| ir             | float32 | (N_ch, ir_len)  | インパルス応答の波形      |
+| position_rx    | float32 | (N_ch, 3)  | 受信機位置 [x, y, z]  |
+| position_tx    | float32 | (3,)  | 送信機位置 [x, y, z]    |

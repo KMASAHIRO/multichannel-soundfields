@@ -142,13 +142,22 @@ dataset_dir/
 ├ ...
 ```
 
-各`rx_*.npz`の内容は以下の通りです。
+各`rx_*.npz`の内容は以下の通りです。N_chは受信機（マイクロフォンアレイ）のチャンネル数です。
 
 | key | dtype | shape | 内容 |
 |---|---|---|---|
-| ir | ndarray | (N_ch, ir_len) | 多チャンネルインパルス応答 |
-| position_rx | ndarray | (N_ch, 3) | 各チャンネルの受信機位置 |
-| position_tx | ndarray | (3,) | 送信機位置 |
+| ir | float32 | (N_ch, ir_len) | 多チャンネルインパルス応答 |
+| position_rx | float32 | (N_ch, 3) | 各チャンネルの受信機位置 [x, y, z] |
+| position_tx | float32 | (3,) | 送信機位置 [x, y, z] |
+
+位置座標はx、yのみ使用するので、zを除いた以下の内容でも構いません。
+
+| key | dtype | shape | 内容 |
+|---|---|---|---|
+| ir | float32 | (N_ch, ir_len) | 多チャンネルインパルス応答 |
+| position_rx | float32 | (N_ch, 2) | 各チャンネルの受信機位置 [x, y] |
+| position_tx | float32 | (2,) | 送信機位置 [x, y] |
+
 
 #### 前処理設定ファイル
 
@@ -232,8 +241,8 @@ optuna_output_dir/
    └─ trials/
       ├─ trial0001/                    # 1回目のパラメータ探索結果
       │  ├─ chkpt/                     # モデルの重み
-      │  │  ├─ best0001.ckpt           # 評価指標が1番目に良いときの重み
-      │  │  ├─ best0002.ckpt           # 評価指標が2番目に良いときの重み
+      │  │  ├─ best0001.chkpt           # 評価指標が1番目に良いときの重み
+      │  │  ├─ best0002.chkpt           # 評価指標が2番目に良いときの重み
       │  │  └─ ...
       │  ├─ loss/                      # 損失
       │  │  ├─ epoch0001.npz           # epoch 1 の結果
@@ -247,6 +256,36 @@ optuna_output_dir/
       │  └─ ...
       └─ ...
 ```
+
+`loss/`以下のnpzファイルの中身は以下のようになります。
+
+| key         | dtype   | shape | 内容                                   |
+| ----------- | ------- | ----- | ------------------------------------ |
+| epoch       | int32   | ()    | epoch番号                              |
+| loss_train  | float32 | ()    | 学習データに対する損失                |
+| mag_train   | float32 | ()    | 学習データに対する振幅の損失                   |
+| phase_train | float32 | ()    | 学習データに対する位相の損失                 |
+| loss_val    | float32 | ()    | 検証データに対する損失                 |
+| mag_val     | float32 | ()    | 検証データに対する振幅の損失                     |
+| phase_val   | float32 | ()    | 検証データに対する位相の損失                   |
+
+`val_results/`以下のnpzファイルの中身は以下のようになります。N_valは検証データのサンプル数、ir_lenは時間波形の長さです。
+
+| key           | dtype     | shape             | 内容                  |
+| ------------- | --------- | ----------------- | ------------------- |
+| position_tx   | float32   | (N_val, 2)            | 送信機位置（xy） |
+| position_rx   | float32   | (N_val, 2)            | 受信機位置（xy） |
+| ir_gt        | float32   | (N_val, N_ch, ir_len) | 正解データの時間波形  |
+| ir_pred       | float32   | (N_val, N_ch, ir_len) | 推論結果の時間波形  |
+| doa_true_deg   | float32 | (N_val,)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
+| doa_gt_deg     | float32 | (N_val,)  | 正解データ波形から推定した音源方向 [°]               |
+| doa_pred_deg   | float32 | (N_val,)  | 推論結果波形から推定した音源方向 [°]             |
+| metric_angle   | float32 | (N_val, N_ch) | 位相の誤差        |
+| metric_amp     | float32 | (N_val, N_ch) | 振幅の誤差    |
+| metric_env_pct | float32 | (N_val, N_ch) | 包絡線の誤差 [%] |
+| metric_t60_pct | float32 | (N_val, N_ch) | 残響時間T60の誤差 [%]       |
+| metric_c50_db  | float32 | (N_val, N_ch) | 明瞭度C50の誤差 [dB]      |
+| metric_edt_ms  | float32 | (N_val, N_ch) | 初期残響時間EDTの誤差 [ms]      |
 
 ---
 
@@ -309,8 +348,8 @@ YAMLファイルで以下の内容を設定します。
 train_output_dir/
 ├─ train_config.yml                  # 入力の設定ファイルのコピー
 ├─ chkpt/                            # モデルの重み
-│  ├─ best0001.ckpt                  # 評価指標が1番目に良いときの重み
-│  ├─ best0002.ckpt                  # 評価指標が2番目に良いときの重み
+│  ├─ best0001.chkpt                  # 評価指標が1番目に良いときの重み
+│  ├─ best0002.chkpt                  # 評価指標が2番目に良いときの重み
 │  └─ ...
 ├─ loss/                             # 損失
 │  ├─ epoch0001.npz                  # epoch 1 の結果

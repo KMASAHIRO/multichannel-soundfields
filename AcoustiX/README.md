@@ -193,13 +193,13 @@ output_dir/
 
 | key            | dtype   | shape | 内容                 |
 | -------------- | ------- | ----- | ------------------ |
-| ir             | ndarray | (N_ch, ir_len)  | インパルス応答の波形      |
-| position_rx    | ndarray | (N_ch, 3)  | 受信機位置 [x, y, z]  |
-| position_tx    | ndarray | (3,)  | 送信機位置 [x, y, z]    |
-| orientation_rx | ndarray | (N_ch, 3)  | 受信機の向き [x, y, z] |
-| orientation_tx | ndarray | (3,)  | 送信機の向き [x, y, z]   |
-| pattern_rx     | ndarray     | (N_ch,)  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
-| pattern_tx     | ndarray     | ()  | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+| ir             | float32 | (N_ch, ir_len)  | インパルス応答の波形      |
+| position_rx    | float32 | (N_ch, 3)  | 受信機位置 [x, y, z]  |
+| position_tx    | float32 | (3,)  | 送信機位置 [x, y, z]    |
+| orientation_rx | float32 | (N_ch, 3)  | 受信機の向き [x, y, z] |
+| orientation_tx | float32 | (3,)  | 送信機の向き [x, y, z]   |
+| pattern_rx     | str     | (N_ch,)  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+| pattern_tx     | str     | ()  | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 ---
 
