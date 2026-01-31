@@ -147,17 +147,8 @@ dataset_dir/
 | key | dtype | shape | 内容 |
 |---|---|---|---|
 | ir | float32 | (N_ch, ir_len) | 多チャンネルインパルス応答 |
-| position_rx | float32 | (N_ch, 3) | 各チャンネルの受信機位置 [x, y, z] |
-| position_tx | float32 | (3,) | 送信機位置 [x, y, z] |
-
-位置座標はx、yのみ使用するので、zを除いた以下の内容でも構いません。
-
-| key | dtype | shape | 内容 |
-|---|---|---|---|
-| ir | float32 | (N_ch, ir_len) | 多チャンネルインパルス応答 |
-| position_rx | float32 | (N_ch, 2) | 各チャンネルの受信機位置 [x, y] |
-| position_tx | float32 | (2,) | 送信機位置 [x, y] |
-
+| position_rx | float32 | (N_ch, 3) or (N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_tx | float32 | (3,) or (2,) | 送信機位置 [x, y, z] or [x, y] |
 
 #### 前処理設定ファイル
 
@@ -273,8 +264,8 @@ optuna_output_dir/
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
-| position_tx   | float32   | (N_val, 2)            | 送信機位置（xy） |
-| position_rx   | float32   | (N_val, 2)            | 受信機位置（xy） |
+| position_tx | float32 | (N_val, 3) or (N_val, 2) | 送信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_val, N_ch, 3) or (N_val, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
 | ir_gt        | float32   | (N_val, N_ch, ir_len) | 正解データの時間波形  |
 | ir_pred       | float32   | (N_val, N_ch, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_val,)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
@@ -412,24 +403,12 @@ YAMLファイルで以下の内容を設定します。
 
 #### 受信機データファイル
 
-- `model_type`が`NAF`の場合
-
 受信機の位置を定義したJSONファイルを用意します。  
 `N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はN_chチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
 | positions | list | (N_rx, N_ch, 3) | 受信機位置 [x, y, z] |
-
-- `model_type`が`NAF+`の場合
-
-受信機（マイクロフォンアレイ）の中心位置を定義したJSONファイルを用意します。  
-`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はN_chチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。  
-`NAF+`の場合は、マイクロフォンアレイの中心位置をJSONファイルに記録します。
-
-| key | 型 | shape | 内容 |
-|---|---|---|---|
-| positions | list | (N_rx, 3) | 受信機位置 [x, y, z] |
 
 ---
 
@@ -442,3 +421,11 @@ inference_output_dir/
 ├─ inference_config.yml                  # 入力の設定ファイルのコピー
 └─ results.npz                           # 推論結果
 ```
+
+`results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ir_lenは時間波形の長さです。
+
+| key           | dtype     | shape             | 内容                  |
+| ------------- | --------- | ----------------- | ------------------- |
+| position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_inf, N_ch, 3) or (N_inf, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir_pred       | float32   | (N_inf, N_ch, ir_len) | 推論結果の時間波形  |
