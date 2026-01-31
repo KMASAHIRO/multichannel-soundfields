@@ -342,7 +342,7 @@ YAMLファイルで以下の内容を設定します。
 
 ### 学習 出力
 
-`train_output_dir`に、以下のディレクトリ構成でハイパラチューニング結果を出力します。
+`train_output_dir`に、以下のディレクトリ構成で学習結果を出力します。
 
 ```text
 train_output_dir/
@@ -435,7 +435,7 @@ YAMLファイルで以下の内容を設定します。
 
 ### 推論　出力
 
-`inference_output_dir`に、以下のディレクトリ構成でハイパラチューニング結果を出力します。
+`inference_output_dir`に、以下のディレクトリ構成で推論結果を出力します。
 
 ```text
 inference_output_dir/
