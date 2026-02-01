@@ -19,7 +19,6 @@ NAFを用いた多チャンネル音場推定
 - Matplotlib 3.9
 - Pyroomacoustics 0.8
 - librosa 0.11
-- scikit-learn 1.6
 - Optuna 4.5
 
 詳細な依存関係および正確なバージョンについては、  
@@ -199,9 +198,10 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | study.study_name | naf_plus_optuna | Optunaのstudy名 |
-| study.direction | minimize | 最適化方向（`minimize` / `maximize`） |
 | study.n_trials | 50 | 試行回数 |
-| doa_metric.algorithm | NormMUSIC | DoAアルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
+| doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
+| doa_metric.fs | 16000 | DoA計算時のサンプリング周波数 [Hz] |
+| doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
 | doa_metric.fallback_value | 999.0 | 評価値が取得できない場合の代替値 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
@@ -296,6 +296,9 @@ YAMLファイルで以下の内容を設定します。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
+| doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
+| doa_metric.fs | 16000 | DoA計算時のサンプリング周波数 [Hz] |
+| doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.dir_ch | 8 | チャンネル数 |
@@ -327,7 +330,7 @@ YAMLファイルで以下の内容を設定します。
 | param.embed_time_max_freq | 10 | 時刻の埋め込みにおける最大周波数 |
 | param.embed_freq_num_freqs | 10 | 周波数の埋め込みにおける周波数の数 |
 | param.embed_freq_max_freq | 10 | 周波数の埋め込みにおける最大周波数 |
-| doa_metric.algorithm | NormMUSIC | DoAアルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
+| doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
 
 ---
 
@@ -360,7 +363,7 @@ train_output_dir/
 | 入力 | 説明 |
 |---|---|
 | [推論設定ファイル](#推論設定ファイル) | NAFの推論条件 |
-| 学習済みモデルの重み | 学習済みチェックポイント |
+| 学習済みモデルの重み | 学習済みモデルのチェックポイント |
 | [送信機データファイル](#送信機データファイル) | 送信機（スピーカー）の位置 |
 | [受信機データファイル](#受信機データファイル) | 受信機（マイクロフォンアレイ）の位置 |
 | [推論結果出力先ディレクトリ](#推論出力) | 推論結果の出力先 |
