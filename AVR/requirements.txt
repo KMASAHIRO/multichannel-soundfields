@@ -1,0 +1,23 @@
+torch==2.2.2+cu118
+torchaudio==2.2.2+cu118
+torchvision==0.17.2+cu118
+numpy==1.26.4
+scipy==1.13.1
+pandas==2.3.2
+matplotlib==3.9.4
+pyroomacoustics==0.8.4
+librosa==0.11.0
+soundfile==0.13.1
+soxr==0.5.0.post1
+audioread==3.0.1
+optuna==4.4.0
+tensorboard==2.19.0
+tqdm==4.67.1
+colorlog==6.9.0
+PyYAML==6.0.2
+requests==2.32.3
+scikit-learn==1.6.1
+cmake==4.0.2
+pybind11==3.0.0
+Cython==3.1.2
+tinycudann @ git+https://github.com/NVlabs/tiny-cuda-nn@48d6989c95def307a40baf176b2d6015dada19f9#subdirectory=bindings/torch

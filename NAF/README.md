@@ -36,7 +36,7 @@ NAF/
 │  ├ preprocess_config.yml        前処理の設定ファイル
 │  ├ optuna_config.yml            ハイパラチューニングの設定ファイル
 │  ├ train_config.yml             学習の設定ファイル
-│  └ inference_config.yml              推論の設定ファイル
+│  └ inference_config.yml         推論の設定ファイル
 ├ preprocess/                   前処理
 │  ├ split_train_val.py           学習データと検証データの分割
 │  └ preprocess.py                前処理（STFTなど）
@@ -46,7 +46,7 @@ NAF/
 ├ sound_loader.py               データローダ
 ├ optuna_tuning.py              Optunaによるハイパラチューニング
 ├ train.py                      学習
-└ inference.py                       推論
+└ inference.py                  推論
 ```
 
 ---
@@ -83,7 +83,7 @@ python preprocess/preprocess.py \
   --output_dir preprocessed_data_dir
 ```
 
-5. Optuna によるハイパラメータ探索
+5. Optunaによるハイパラメータ探索
 
 ```
 python optuna_tuning.py \
@@ -207,7 +207,7 @@ YAMLファイルで以下の内容を設定します。
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.dir_ch | 8 | チャンネル数 |
 | setting.epochs | 200 | 学習エポック数 |
-| setting.resume | False | チェックポイントから再開するかどうか |
+| setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 20 | 学習時のバッチサイズ |
 | setting.save_best_k | 10 | 評価指標が良い上位k個のモデルを保存 |
 | fixed.* | — | 固定するハイパーパラメータ（詳細は[学習設定ファイル](#学習設定ファイル)） |
@@ -227,21 +227,21 @@ YAMLファイルで以下の内容を設定します。
 ```text
 optuna_output_dir/
 └─ <study_name>/
-   ├─ optuna_config.yml                # 入力の設定ファイルのコピー
-   ├─ <study_name>.db                  # Optuna study DB (SQLiteファイル)
-   └─ trials/
+   ├─ optuna_config.yml              # 入力の設定ファイルのコピー
+   ├─ <study_name>.db                # Optuna study DB (SQLiteファイル)
+   └─ trials/                        #各試行結果
       ├─ trial0001/                    # 1回目のパラメータ探索結果
       │  ├─ chkpt/                     # モデルの重み
       │  │  ├─ best0001.chkpt           # 評価指標が1番目に良いときの重み
       │  │  ├─ best0002.chkpt           # 評価指標が2番目に良いときの重み
       │  │  └─ ...
       │  ├─ loss/                      # 損失
-      │  │  ├─ epoch0001.npz           # epoch 1 の結果
-      │  │  ├─ epoch0002.npz           # epoch 2 の結果
+      │  │  ├─ epoch0001.npz            # epoch 1 の結果
+      │  │  ├─ epoch0002.npz            # epoch 2 の結果
       │  │  └─ ...
       │  └─ val_results/               # 検証データでの推論結果
-      │     ├─ epoch0001.npz           # epoch 1 終了時の結果
-      │     ├─ epoch0002.npz           # epoch 2 終了時の結果
+      │     ├─ epoch0001.npz            # epoch 1 終了時の結果
+      │     ├─ epoch0002.npz            # epoch 2 終了時の結果
       │     └─ ...
       ├─ trial0002/
       │  └─ ...
@@ -303,7 +303,7 @@ YAMLファイルで以下の内容を設定します。
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.dir_ch | 8 | チャンネル数 |
 | setting.epochs | 200 | 学習エポック数 |
-| setting.resume | False | チェックポイントから再開するかどうか |
+| setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 20 | 学習時のバッチサイズ |
 | setting.save_best_k | 10 | 評価指標が良い上位k個のモデルを保存 |
 | param.mag_alpha | 1.0 | 振幅の損失項係数 |
@@ -330,7 +330,6 @@ YAMLファイルで以下の内容を設定します。
 | param.embed_time_max_freq | 10 | 時刻の埋め込みにおける最大周波数 |
 | param.embed_freq_num_freqs | 10 | 周波数の埋め込みにおける周波数の数 |
 | param.embed_freq_max_freq | 10 | 周波数の埋め込みにおける最大周波数 |
-| doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
 
 ---
 
@@ -346,12 +345,12 @@ train_output_dir/
 │  ├─ best0002.chkpt                  # 評価指標が2番目に良いときの重み
 │  └─ ...
 ├─ loss/                             # 損失
-│  ├─ epoch0001.npz                  # epoch 1 の結果
-│  ├─ epoch0002.npz                  # epoch 2 の結果
+│  ├─ epoch0001.npz                   # epoch 1 の結果
+│  ├─ epoch0002.npz                   # epoch 2 の結果
 │  └─ ...
 └─ val_results/                      # 検証データでの推論結果
-   ├─ epoch0001.npz                  # epoch 1 終了時の結果
-   ├─ epoch0002.npz                  # epoch 2 終了時の結果
+   ├─ epoch0001.npz                   # epoch 1 終了時の結果
+   ├─ epoch0002.npz                   # epoch 2 終了時の結果
    └─ ...
 ```
 
