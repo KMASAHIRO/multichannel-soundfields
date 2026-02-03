@@ -2,7 +2,7 @@
 
 「[ニューラル音場推定による仮想音場でのマイクロフォンアレイ音源定位評価](https://www.osaka-kyoiku.ac.jp/~challeng/SIG-Challenge-068/SIG-Challenge-068-03.pdf)」のソースコードです。
 
-ニューラルネットワークを用いた多チャンネル音場推定を行います。学習データとなる実データのダウンロードコマンドや、シミュレーションデータの作成コードを含みます。
+ニューラルネットワークを用いた多チャンネル音場推定を実装しています。学習データとなる実データのダウンロードコマンドや、シミュレーションデータの作成コードを含みます。
 
 ---
 
@@ -19,6 +19,8 @@ multichannel-soundfields/
 └ real_data/         実データダウンロード、整形
 ```
 
+---
+
 ## データセット
 
 実データセットのダウンロードコマンドおよびその整形コードを[`real_data`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/real_data)にまとめています。  
@@ -29,6 +31,8 @@ multichannel-soundfields/
 ニューラルネットワークを用いた音場推定手法であるAVR、NAFを多チャンネル音響に拡張した手法をそれぞれ[`AVR`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR)、[`NAF`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF)にまとめています。  
 AVRについては、チャンネル番号に対応する埋め込みベクトルを入力するAVR+、AVR+の損失関数に音源方向推定の誤差を加えたAVR++を実装しています。  
 NAFについては、チャンネル番号に対応する埋め込みベクトルを入力するNAF+を実装しています。
+
+---
 
 ## 引用
 ```
