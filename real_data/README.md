@@ -2,6 +2,10 @@
 
 実データのダウンロード、整形
 
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイによる測定から求めたインパルス応答を記録しています。各測定ではスピーカーを1つだけ使用し、グリッド上のその他の点にマイクロフォンアレイを配置して記録しています。
+
+<img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
+
 ---
 
 ## 動作環境
@@ -67,8 +71,8 @@ python data_formatting.py \
 
 ```text
 dataset_dir/
-├ tx_0/                        # 送信機のインデックス（0,1,2,...）
-│  ├ rx_0.npz                  # 受信機のインデックス（0,1,2,...）
+├ tx_0/                        送信機のインデックス（0,1,2,...）
+│  ├ rx_0.npz                  受信機のインデックス（0,1,2,...）
 │  ├ rx_1.npz
 │  ├ ...
 ├ tx_1/

@@ -113,8 +113,8 @@ YAMLファイルで以下の内容を設定します。
 
 ```text
 metrics_output_dir/
-├─ metrics_config.yml                  # 入力の設定ファイルのコピー
-└─ metrics_results.npz                 # 評価結果
+├─ metrics_config.yml                  入力の設定ファイルのコピー
+└─ metrics_results.npz                 評価結果
 ```
 
 `metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、N_chは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
@@ -167,8 +167,8 @@ YAMLファイルで以下の内容を設定します。
 
 ```text
 whitenoise_metrics_output_dir/
-├─ whitenoise_metrics_config.yml                  # 入力の設定ファイルのコピー
-└─ whitenoise_metrics_results.npz                 # 評価結果
+├─ whitenoise_metrics_config.yml                  入力の設定ファイルのコピー
+└─ whitenoise_metrics_results.npz                 評価結果
 ```
 
 `whitenoise_metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、N_chは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さ、N_timeframeはインパルス応答とホワイトノイズ畳み込み後の時間方向の分割数です。

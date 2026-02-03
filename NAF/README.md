@@ -3,6 +3,7 @@
 NAFを用いた多チャンネル音場推定  
 
 [NAF](https://github.com/aluo-x/Learning_Neural_Acoustic_Fields)をベースとして、多チャンネル音場への拡張を行いました。  
+NAFに加え、チャンネル番号に対応する埋め込みベクトルを入力するNAF+を実装しています。
 
 ---
 
@@ -127,12 +128,12 @@ python inference.py \
 #### データセットディレクトリ
 
 `dataset_dir`に、以下のディレクトリ構成で多チャンネルインパルス応答の波形データを用意します。  
-[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/real_data)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)によるシミュレーションデータを使う場合は、各「出力先ディレクトリ」をそのまま使用してください。
+[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/real_data#出力)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)によるシミュレーションデータを使う場合は、各「出力先ディレクトリ」をそのまま使用してください。
 
 ```text
 dataset_dir/
-├ tx_0/                        # 送信機のインデックス（0,1,2,...）
-│  ├ rx_0.npz                  # 受信機のインデックス（0,1,2,...）
+├ tx_0/                        送信機のインデックス（0,1,2,...）
+│  ├ rx_0.npz                  受信機のインデックス（0,1,2,...）
 │  ├ rx_1.npz
 │  ├ ...
 ├ tx_1/
@@ -173,11 +174,11 @@ NAFのモデルタイプにおける`NAF+`は、`NAF`を多チャンネルデー
 
 ```text
 preprocessed_data_dir/
-├ preprocess_config.yml         # 入力の設定ファイルのコピー
-├ train_val_split.pkl           # 学習データと検証データの分割
-├ positions.h5                  # 送信機・受信機の位置
-├ magnitudes.h5                 # 振幅
-└ phases.h5                     # 位相
+├ preprocess_config.yml         入力の設定ファイルのコピー
+├ train_val_split.pkl           学習データと検証データの分割
+├ positions.h5                  送信機・受信機の位置
+├ magnitudes.h5                 振幅
+└ phases.h5                     位相
 ```
 
 ---
@@ -227,21 +228,21 @@ YAMLファイルで以下の内容を設定します。
 ```text
 optuna_output_dir/
 └─ <study_name>/
-   ├─ optuna_config.yml              # 入力の設定ファイルのコピー
-   ├─ <study_name>.db                # Optuna study DB (SQLiteファイル)
-   └─ trials/                        #各試行結果
-      ├─ trial0001/                    # 1回目のパラメータ探索結果
-      │  ├─ chkpt/                     # モデルの重み
-      │  │  ├─ best0001.chkpt           # 評価指標が1番目に良いときの重み
-      │  │  ├─ best0002.chkpt           # 評価指標が2番目に良いときの重み
+   ├─ optuna_config.yml              入力の設定ファイルのコピー
+   ├─ <study_name>.db                Optuna study DB (SQLiteファイル)
+   └─ trials/                        各試行結果
+      ├─ trial0001/                    1回目のパラメータ探索結果
+      │  ├─ chkpt/                     モデルの重み
+      │  │  ├─ best0001.chkpt           評価指標が1番目に良いときの重み
+      │  │  ├─ best0002.chkpt           評価指標が2番目に良いときの重み
       │  │  └─ ...
-      │  ├─ loss/                      # 損失
-      │  │  ├─ epoch0001.npz            # epoch 1 の結果
-      │  │  ├─ epoch0002.npz            # epoch 2 の結果
+      │  ├─ loss/                      損失
+      │  │  ├─ epoch0001.npz            epoch 1 の結果
+      │  │  ├─ epoch0002.npz            epoch 2 の結果
       │  │  └─ ...
-      │  └─ val_results/               # 検証データでの推論結果
-      │     ├─ epoch0001.npz            # epoch 1 終了時の結果
-      │     ├─ epoch0002.npz            # epoch 2 終了時の結果
+      │  └─ val_results/               検証データでの推論結果
+      │     ├─ epoch0001.npz            epoch 1 終了時の結果
+      │     ├─ epoch0002.npz            epoch 2 終了時の結果
       │     └─ ...
       ├─ trial0002/
       │  └─ ...
@@ -339,18 +340,18 @@ YAMLファイルで以下の内容を設定します。
 
 ```text
 train_output_dir/
-├─ train_config.yml                  # 入力の設定ファイルのコピー
-├─ chkpt/                            # モデルの重み
-│  ├─ best0001.chkpt                  # 評価指標が1番目に良いときの重み
-│  ├─ best0002.chkpt                  # 評価指標が2番目に良いときの重み
+├─ train_config.yml                  入力の設定ファイルのコピー
+├─ chkpt/                            モデルの重み
+│  ├─ best0001.chkpt                  評価指標が1番目に良いときの重み
+│  ├─ best0002.chkpt                  評価指標が2番目に良いときの重み
 │  └─ ...
-├─ loss/                             # 損失
-│  ├─ epoch0001.npz                   # epoch 1 の結果
-│  ├─ epoch0002.npz                   # epoch 2 の結果
+├─ loss/                             損失
+│  ├─ epoch0001.npz                   epoch 1 の結果
+│  ├─ epoch0002.npz                   epoch 2 の結果
 │  └─ ...
-└─ val_results/                      # 検証データでの推論結果
-   ├─ epoch0001.npz                   # epoch 1 終了時の結果
-   ├─ epoch0002.npz                   # epoch 2 終了時の結果
+└─ val_results/                      検証データでの推論結果
+   ├─ epoch0001.npz                   epoch 1 終了時の結果
+   ├─ epoch0002.npz                   epoch 2 終了時の結果
    └─ ...
 ```
 
@@ -420,8 +421,8 @@ YAMLファイルで以下の内容を設定します。
 
 ```text
 inference_output_dir/
-├─ inference_config.yml                  # 入力の設定ファイルのコピー
-└─ results.npz                           # 推論結果
+├─ inference_config.yml                  入力の設定ファイルのコピー
+└─ results.npz                           推論結果
 ```
 
 `results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ir_lenは時間波形の長さです。

@@ -178,8 +178,8 @@ output_dir/
 ├ config.yml
 ├ speaker_data.json
 ├ receiver_data.json
-├ tx_0/                        # 送信機のインデックス（0,1,2,...）
-│  ├ rx_0.npz                  # 受信機のインデックス（0,1,2,...）
+├ tx_0/                        送信機のインデックス（0,1,2,...）
+│  ├ rx_0.npz                  受信機のインデックス（0,1,2,...）
 │  ├ rx_1.npz
 │  ├ ...
 ├ tx_1/
