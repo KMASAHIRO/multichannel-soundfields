@@ -61,9 +61,8 @@ for c_idx, (cx, cy, cz) in enumerate(rx_centers):
         y = cy + MIC_RADIUS * np.sin(theta)
         rx_positions[c_idx, ch] = [x, y, cz]
 
-# (N_rx, 3) にフラット化
-rx_positions_flat = rx_positions.reshape(-1, 3)
-N_RX = rx_positions_flat.shape[0]
+# (N_rx, N_ch, 3) そのまま
+N_RX = rx_positions.shape[0]
 
 
 # ============================================================
@@ -73,15 +72,11 @@ N_RX = rx_positions_flat.shape[0]
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 speaker_data = {
-    "speaker": {
-        "positions": tx_positions.tolist()
-    }
+    "positions": tx_positions.tolist()
 }
 
 receiver_data = {
-    "receiver": {
-        "positions": rx_positions_flat.tolist()
-    }
+    "positions": rx_positions.tolist()
 }
 
 with open(SPEAKER_JSON_PATH, "w", encoding="utf-8") as f:
@@ -91,4 +86,4 @@ with open(RECEIVER_JSON_PATH, "w", encoding="utf-8") as f:
     json.dump(receiver_data, f, indent=4)
 
 print(f"[OK] speaker_data.json  -> {SPEAKER_JSON_PATH}  (N_tx={N_TX})")
-print(f"[OK] receiver_data.json -> {RECEIVER_JSON_PATH} (N_rx={N_RX})")
+print(f"[OK] receiver_data.json -> {RECEIVER_JSON_PATH} (N_rx={N_RX}, N_ch={NUM_CHANNELS})")

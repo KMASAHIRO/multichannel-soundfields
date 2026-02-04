@@ -1,99 +1,118 @@
+import argparse
+import json
 import os
+import shutil
+
 import numpy as np
 import pyroomacoustics as pra
 from tqdm import tqdm
-import json
+import yaml
 
-def generate_positions_real_env():
-    # 部屋隅が原点
-    x_offset = 1.0
-    y_offset = 1.5
-    z_pos = 1.5  # 床から1.5m
 
-    all_centers = []
-    for i in range(6):  # Y方向
-        for j in range(4):  # X方向
-            x = x_offset + j * 1.0
-            y = y_offset + i * 1.0
-            all_centers.append([x, y, z_pos])
-    all_centers = np.array(all_centers)
+def load_yaml_config(path):
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.load(f, Loader=yaml.FullLoader)
 
-    spk_indices = [0, 3, 20, 23, 9, 10, 13, 14]
-    tx_pos = all_centers[spk_indices]
+def load_speaker_positions(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    positions = data["positions"]
+    return np.array(positions, dtype=np.float32)
 
-    num_channels = 8
-    radius = 0.0365
-    num_speakers = len(spk_indices)
-    num_total = len(all_centers)
-    num_mics_per_spk = num_total - 1
 
-    rx_pos = np.zeros((num_speakers, num_mics_per_spk, num_channels, 3))
-    mic_centers_per_spk = []
+def load_receiver_positions(path):
+    with open(path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    positions = data["positions"]
+    positions = np.array(positions, dtype=np.float32)
+    return positions
 
-    for s_idx, spk_idx in enumerate(spk_indices):
-        mic_indices = [i for i in range(num_total) if i != spk_idx]
-        mic_centers = all_centers[mic_indices]
-        mic_centers_per_spk.append(mic_centers)
 
-        for m_idx, (cx, cy, cz) in enumerate(mic_centers):
-            for ch in range(num_channels):
-                theta = np.pi / 2 + ch * (2 * np.pi / num_channels)
-                x = cx + radius * np.cos(theta)
-                y = cy + radius * np.sin(theta)
-                rx_pos[s_idx, m_idx, ch] = [x, y, cz]
+def build_ir(room, mic_index, ir_len):
+    ir = room.rir[mic_index][0]
+    if len(ir) >= ir_len:
+        return np.array(ir[:ir_len], dtype=np.float32)
+    padded = np.zeros(ir_len, dtype=np.float32)
+    padded[: len(ir)] = ir
+    return padded
 
-    return tx_pos, mic_centers_per_spk, rx_pos
 
-def simulate_pyroomacoustics_ir(
-    output_path,
-    room_dim=(6.110, 8.807, 2.7),
-    sampling_rate=16000,
-    max_order=10,
-    e_absorption=0.0055,
-    mic_num=8,
-    ir_len=1600
-):
-    tx_all, mic_centers_all, rx_all = generate_positions_real_env()
+def simulate_pyroomacoustics_ir(config_path, speaker_path, receiver_path, output_dir):
+    config = load_yaml_config(config_path)
+    room_cfg = config.get("room", {})
+    signal_cfg = config.get("signal", {})
 
-    speaker_data = {
-        "speaker": {
-            "positions": tx_all.tolist()
-        }
-    }
-    os.makedirs(output_path, exist_ok=True)
-    with open(os.path.join(output_path, 'speaker_data.json'), 'w') as f:
-        json.dump(speaker_data, f, indent=4)
+    room_dim = room_cfg.get("room_dim", [6.110, 8.807, 2.7])
+    max_order = room_cfg.get("max_order", 10)
+    e_absorption = room_cfg.get("e_absorption", 0.0055)
+    sampling_rate = signal_cfg.get("sampling_rate", 16000)
+    ir_len = signal_cfg.get("ir_len", 1600)
 
-    for tx_index, tx_pos in tqdm(enumerate(tx_all), total=len(tx_all), desc="Pyroom IR Sim"):
-        tx_output_path = os.path.join(output_path, f"tx_{tx_index}")
+    tx_positions = load_speaker_positions(speaker_path)
+    rx_positions = load_receiver_positions(receiver_path)
+    num_channels = rx_positions.shape[1]
+    rx_centers = rx_positions.mean(axis=1)
+
+    os.makedirs(output_dir, exist_ok=True)
+    shutil.copy2(config_path, os.path.join(output_dir, "config.yml"))
+    shutil.copy2(speaker_path, os.path.join(output_dir, "speaker_data.json"))
+    shutil.copy2(receiver_path, os.path.join(output_dir, "receiver_data.json"))
+
+    for tx_index, tx_pos in tqdm(
+        enumerate(tx_positions),
+        total=len(tx_positions),
+        desc="Pyroom IR Simulation",
+    ):
+        tx_output_path = os.path.join(output_dir, f"tx_{tx_index}")
         os.makedirs(tx_output_path, exist_ok=True)
 
-        rx_pos = rx_all[tx_index].reshape(-1, 3).T  # shape: (3, 23×8)
+        valid_rx_indices = [
+            i for i, center in enumerate(rx_centers) if not np.allclose(center, tx_pos)
+        ]
+        rx_pos_valid = rx_positions[valid_rx_indices]
+        mic_positions = rx_pos_valid.reshape(-1, 3).T  # shape: (3, N_rx*N_ch)
+
         room = pra.ShoeBox(
             room_dim,
             fs=sampling_rate,
             materials=pra.Material(e_absorption),
-            max_order=max_order
+            max_order=max_order,
         )
         room.add_source(tx_pos.tolist())
-        room.add_microphone_array(rx_pos)
+        room.add_microphone_array(mic_positions)
         room.compute_rir()
 
-        # 各マイク中心ごとに保存（rx_0, rx_1, ..., rx_22）
-        num_mics_per_spk = rx_all.shape[1]
-        for mic_idx in range(num_mics_per_spk):
-            rx_folder = os.path.join(tx_output_path, f"rx_{mic_idx}")
-            os.makedirs(rx_folder, exist_ok=True)
+        for rx_out_idx, _rx_idx in enumerate(valid_rx_indices):
+            ir_channels = []
+            for ch in range(num_channels):
+                mic_idx = rx_out_idx * num_channels + ch
+                ir_channels.append(build_ir(room, mic_idx, ir_len))
+            ir = np.stack(ir_channels, axis=0)
 
-            for ch in range(mic_num):
-                idx = mic_idx * mic_num + ch
-                ir = room.rir[idx][0][:ir_len]
-                np.savez(
-                    os.path.join(rx_folder, f'ir_{str(ch).zfill(6)}.npz'),
-                    ir=np.array(ir),
-                    position_rx=rx_pos[:, idx],
-                    position_tx=np.array(tx_pos)
-                )
+            out_path = os.path.join(tx_output_path, f"rx_{rx_out_idx}.npz")
+            np.savez(
+                out_path,
+                ir=ir,
+                position_rx=rx_pos_valid[rx_out_idx],
+                position_tx=tx_pos,
+            )
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Pyroomacoustics simulation")
+    parser.add_argument("--config", required=True, help="Path to config.yml")
+    parser.add_argument("--speaker", required=True, help="Path to speaker_data.json")
+    parser.add_argument("--receiver", required=True, help="Path to receiver_data.json")
+    parser.add_argument("--output_dir", required=True, help="Output directory")
+    args = parser.parse_args()
+
+    simulate_pyroomacoustics_ir(
+        config_path=args.config,
+        speaker_path=args.speaker,
+        receiver_path=args.receiver,
+        output_dir=args.output_dir,
+    )
+
 
 if __name__ == "__main__":
-    simulate_pyroomacoustics_ir(output_path="./outputs/real_env_avr_16kHz")
+    main()
