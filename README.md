@@ -11,6 +11,7 @@
 ```text
 multichannel-soundfields/
 ├ README.md          ドキュメント
+├ LICENSE            ライセンスファイル（MIT License）
 ├ AVR/               音場推定手法：AVR（Acoustic Volume Rendering）
 ├ AcoustiX/          シミュレーション：AcoustiX
 ├ NAF/               音場推定手法：NAF（Neural Acoustic Fields）
