@@ -207,6 +207,8 @@ YAMLファイルで以下の内容を設定します。
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.dir_ch | 8 | チャンネル数 |
+| setting.xy_min | [0, 0] | xy座標の最小値 [m] |
+| setting.xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
 | setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 20 | 学習時のバッチサイズ |
@@ -303,6 +305,8 @@ YAMLファイルで以下の内容を設定します。
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.dir_ch | 8 | チャンネル数 |
+| setting.xy_min | [0, 0] | xy座標の最小値 [m] |
+| setting.xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
 | setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 20 | 学習時のバッチサイズ |
@@ -377,6 +381,8 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|
 | model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | dir_ch | 8 | チャンネル数 |
+| xy_min | [0, 0] | xy座標の最小値 [m] |
+| xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
 | layers | 8 | MLPの総レイヤ数 |
 | layers_residual | 1 | Residualブロック数 |
 | features | 256 | 各レイヤの隠れ特徴量次元 |
