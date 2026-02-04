@@ -25,9 +25,6 @@ def load_cfg(config_file):
     rt_config = config['rt_config']
     ir_config = config['ir_config']
 
-    rx_pattern = Pattern(pattern_type=ir_config["rx_pattern"])
-    tx_pattern = Pattern(pattern_type=ir_config["tx_pattern"])
-
     material_db_file = './acoustic_absorptions.json'
 
     with open(material_db_file, "r") as f:
@@ -40,8 +37,6 @@ def load_cfg(config_file):
         'ir_len': ir_config['ir_len'],
         'speed': ir_config['speed'],
         'noise': ir_config['noise'],
-        'rx_pattern': rx_pattern,
-        'tx_pattern': tx_pattern,
         'material_db': material_db
     }
     
@@ -124,7 +119,16 @@ def config_scene(scene_path):
     return scene
 
 
-def ir_simulation(scene_path, rx_pos, tx_pos, rx_ori, tx_ori, simu_config):
+def ir_simulation(
+    scene_path,
+    rx_pos,
+    tx_pos,
+    rx_ori,
+    tx_ori,
+    simu_config,
+    rx_pattern_types=None,
+    tx_pattern_type=None,
+):
     """
     Computes propagation paths
 
@@ -169,8 +173,15 @@ def ir_simulation(scene_path, rx_pos, tx_pos, rx_ori, tx_ori, simu_config):
 
     attn_coeff = simu_config['attn']
 
-    rx_pattern_func = simu_config['rx_pattern']
-    tx_pattern_func = simu_config['tx_pattern']
+    default_rx_pattern = 'uniform'
+    default_tx_pattern = 'uniform'
+    if rx_pattern_types is None:
+        rx_pattern_types = [default_rx_pattern] * rx_pos.shape[0]
+    if tx_pattern_type is None:
+        tx_pattern_type = default_tx_pattern
+
+    rx_pattern_funcs = [Pattern(pattern_type=p) for p in rx_pattern_types]
+    tx_pattern_func = Pattern(pattern_type=tx_pattern_type)
     material_db = simu_config['material_db']
 
     BASIC_VOLUME = 1000
@@ -262,7 +273,7 @@ def ir_simulation(scene_path, rx_pos, tx_pos, rx_ori, tx_ori, simu_config):
         oriented_rx_angle = angle_transformation(rx_ori[index], np.stack([rx_az, rx_el], axis=-1))
         oriented_tx_angle = angle_transformation(tx_ori,  np.stack([tx_az, tx_el], axis=-1))
 
-        rx_gain = rx_pattern_func.get_pattern(oriented_rx_angle)
+        rx_gain = rx_pattern_funcs[index].get_pattern(oriented_rx_angle)
         tx_gain = tx_pattern_func.get_pattern(oriented_tx_angle)
 
         # sum up the energy of each path
