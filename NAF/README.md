@@ -200,8 +200,6 @@ YAMLファイルで以下の内容を設定します。
 | study.study_name | naf_plus_optuna | Optunaのstudy名 |
 | study.n_trials | 50 | 試行回数 |
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
-| doa_metric.fs | 16000 | DoA計算時のサンプリング周波数 [Hz] |
-| doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
 | doa_metric.fallback_value | 999.0 | 評価値が取得できない場合の代替値 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
@@ -299,8 +297,6 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
-| doa_metric.fs | 16000 | DoA計算時のサンプリング周波数 [Hz] |
-| doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.dir_ch | 8 | チャンネル数 |
