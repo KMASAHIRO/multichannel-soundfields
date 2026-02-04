@@ -1,7 +1,3 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-
-import math
 from typing import Optional, Tuple
 
 import numpy as np
