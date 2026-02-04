@@ -1,0 +1,6 @@
+fs: 16000
+n_fft: 512
+hop_size: 128
+window: hann
+log_eps: 1e-3
+mag_std_eps: 0.1

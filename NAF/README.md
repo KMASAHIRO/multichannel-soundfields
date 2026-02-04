@@ -164,7 +164,6 @@ NAFのモデルタイプにおける`NAF+`は、`NAF`を多チャンネルデー
 | window | hann | 窓関数（`hamming` / `gaussian` / `boxcar` など（[詳細](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html)）） |
 | log_eps | 1e-3 | log計算のエラーを防ぐための微小値 |
 | mag_std_eps | 0.1 | 振幅の標準偏差計算時の微小値 |
-| model_type | NAF+ | モデルタイプ（`NAF` / `NAF+`） |
 
 ---
 
