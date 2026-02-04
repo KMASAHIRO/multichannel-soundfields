@@ -49,17 +49,17 @@ pip install -r requirements.txt
 3. 実データのダウンロード
 
 ```
-curl -L -o real_data_original.zip \
+curl -L -o real_wav_data.zip \
   [URL]
 
-unzip real_data_original.zip -d real_data_original
+unzip real_wav_data.zip
 ```
 
 4. データ整形
 
 ```
 python data_formatting.py \
-  --data_dir real_data_original \
+  --data_dir real_wav_data \
   --output_dir real_data
 ```
 
@@ -81,10 +81,10 @@ dataset_dir/
 ├ ...
 ```
 
-各`rx_*.npz`の内容は以下の通りです。ir_lenは時間波形の長さです。
+各`rx_*.npz`の内容は以下の通りです。
 
 | key | dtype | shape | 内容 |
 |---|---|---|---|
-| ir | float32 | (8, ir_len) | 8チャンネルのインパルス応答の波形 |
+| ir | float32 | (8, 1600) | 8チャンネルのインパルス応答の波形 |
 | position_rx | float32 | (8, 3) | 各チャンネルの受信機位置 [x, y, z] |
 | position_tx | float32 | (3,) | 送信機位置 [x, y, z] |

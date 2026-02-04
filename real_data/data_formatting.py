@@ -1,99 +1,150 @@
-import os
+import argparse
+from pathlib import Path
 import numpy as np
 import soundfile as sf
-from pathlib import Path
 
-def generate_positions_real_env():
-    x_offset = 1.0
-    y_offset = 1.5
-    z_pos = 1.5
-    all_centers = []
-    for i in range(6):  # Y方向（0〜5）
-        for j in range(4):  # X方向（0〜3）
-            x = x_offset + j * 1.0
-            y = y_offset + i * 1.0
-            all_centers.append([x, y, z_pos])
-    all_centers = np.array(all_centers)
 
-    spk_indices = [0, 3, 20, 23, 9, 10, 13, 14]  # all_centersのindex
-    tx_pos = all_centers[spk_indices]
+def load_points(points_file: Path) -> dict:
+    points = {}
+    with points_file.open("r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split("\t")
+            if len(parts) != 4:
+                raise ValueError(f"Invalid line in points file: {line}")
+            idx_str, x, y, z = parts
+            idx = int(idx_str)
+            points[idx] = np.array([float(x), float(y), float(z)], dtype=np.float32)
+    return points
+
+
+def mic_positions(
+    center: np.ndarray,
+    num_channels: int = 8,
+    radius: float = 0.0365,
+    phase_offset: float = np.pi / 2,
+) -> np.ndarray:
+    positions = np.zeros((num_channels, 3), dtype=np.float32)
+    for ch in range(num_channels):
+        theta = phase_offset + ch * (2 * np.pi / num_channels)
+        x = center[0] + radius * np.cos(theta)
+        y = center[1] + radius * np.sin(theta)
+        positions[ch] = [x, y, center[2]]
+    return positions
+
+
+def parse_wav_name(path: Path):
+    parts = path.stem.split("_")
+    if len(parts) != 3:
+        return None
+    try:
+        tx_idx = int(parts[0])
+        rx_idx = int(parts[1])
+        ch_idx = int(parts[2])
+    except ValueError:
+        return None
+    return tx_idx, rx_idx, ch_idx
+
+
+def find_wavs(data_dir: Path):
+    wavs = list(data_dir.glob("*.wav"))
+    if wavs:
+        return wavs
+    return list(data_dir.rglob("*.wav"))
+
+
+def convert_ir_to_npz(
+    data_dir: Path,
+    output_dir: Path,
+    ir_start: int = 8720,
+    ir_len: int = 1600,
+) -> None:
+    points_file = data_dir / "points.txt"
+    points = load_points(points_file)
+    wav_files = find_wavs(data_dir)
+    if not wav_files:
+        raise FileNotFoundError(f"No wav files found in {data_dir}")
+
+    grouped = {}
+    for wav_path in wav_files:
+        parsed = parse_wav_name(wav_path)
+        if parsed is None:
+            print(f"Skipping (unrecognized name): {wav_path.name}")
+            continue
+        tx_idx, rx_idx, ch_idx = parsed
+        grouped.setdefault((tx_idx, rx_idx), {})[ch_idx] = wav_path
 
     num_channels = 8
-    radius = 0.0365
-    num_speakers = len(spk_indices)
-    num_total = len(all_centers)
-    num_mics_per_spk = num_total - 1
+    sample_rate = 16000
+    total_written = 0
 
-    rx_pos = np.zeros((num_speakers, num_mics_per_spk, num_channels, 3))
-    mic_centers_per_spk = []
+    tx_indices = sorted({tx for (tx, _rx) in grouped.keys()})
+    tx_map = {tx: i for i, tx in enumerate(tx_indices)}
 
-    for s_idx, spk_idx in enumerate(spk_indices):
-        mic_indices = [i for i in range(num_total) if i != spk_idx]
-        mic_centers = all_centers[mic_indices]
-        mic_centers_per_spk.append(mic_centers)
-        for m_idx, (cx, cy, cz) in enumerate(mic_centers):
-            for ch in range(num_channels):
-                theta = np.pi / 2 + ch * (2 * np.pi / num_channels)
-                x = cx + radius * np.cos(theta)
-                y = cy + radius * np.sin(theta)
-                rx_pos[s_idx, m_idx, ch] = [x, y, cz]
+    rx_map_per_tx = {}
+    for tx in tx_indices:
+        rx_indices = sorted({rx for (t, rx) in grouped.keys() if t == tx})
+        rx_map_per_tx[tx] = {rx: i for i, rx in enumerate(rx_indices)}
 
-    return tx_pos, mic_centers_per_spk, rx_pos, spk_indices
+    for (tx_idx, rx_idx), ch_map in sorted(grouped.items()):
+        missing = [ch for ch in range(1, num_channels + 1) if ch not in ch_map]
+        if missing:
+            print(f"Skipping tx {tx_idx} rx {rx_idx}: missing channels {missing}")
+            continue
+        if tx_idx not in points or rx_idx not in points:
+            print(f"Skipping tx {tx_idx} rx {rx_idx}: missing point definition")
+            continue
 
-# 数式による index 変換
-def wav_index_to_all_centers_index(wav_idx: int) -> int:
-    y = (wav_idx - 1) % 6
-    x = (wav_idx - 1) // 6
-    return y * 4 + x
+        ir_list = []
+        lengths = []
+        for ch in range(1, num_channels + 1):
+            wav_path = ch_map[ch]
+            audio, sr = sf.read(wav_path, always_2d=False)
+            if audio.ndim > 1:
+                audio = audio[:, 0]
+            if sample_rate is None:
+                sample_rate = sr
+            elif sr != sample_rate:
+                print(f"Warning: sample rate mismatch in {wav_path.name} ({sr} != {sample_rate})")
+            if len(audio) < ir_start + ir_len:
+                print(f"Skipping {wav_path.name}: too short for slice")
+                ir_list = []
+                break
+            sliced = audio[ir_start:ir_start + ir_len]
+            ir_list.append(sliced.astype(np.float32))
+            lengths.append(len(sliced))
 
-def all_centers_index_to_wav_index(center_idx: int) -> int:
-    y = center_idx // 4
-    x = center_idx % 4
-    return x * 6 + y + 1
+        if not ir_list:
+            continue
 
-# メイン処理
-def convert_ir_to_npz(ir_dir, output_dir, ir_start=9600, ir_len=1600):
-    tx_pos, mic_centers_per_spk, rx_pos, spk_indices = generate_positions_real_env()
-    ir_dir = Path(ir_dir)
-    output_dir = Path(output_dir)
-    output_dir.mkdir(parents=True, exist_ok=True)
+        ir = np.stack(ir_list, axis=0)
+        position_tx = points[tx_idx]
+        position_rx = mic_positions(points[rx_idx], num_channels=num_channels)
 
-    num_speakers = len(spk_indices)
-    num_channels = 8
-    mic_per_spk = 23  # 24 - 1
+        tx_dir = output_dir / f"tx_{tx_map[tx_idx]}"
+        tx_dir.mkdir(parents=True, exist_ok=True)
+        out_path = tx_dir / f"rx_{rx_map_per_tx[tx_idx][rx_idx]}.npz"
+        np.savez(
+            out_path,
+            ir=ir,
+            position_rx=position_rx,
+            position_tx=position_tx,
+        )
+        total_written += 1
+    
+    print(f"written: {total_written} files")
 
-    for s_idx, spk_idx in enumerate(spk_indices):
-        tx_output_path = output_dir / f"tx_{s_idx}"
-        tx_output_path.mkdir(parents=True, exist_ok=True)
 
-        for mic_idx in range(mic_per_spk):
-            rx_folder = tx_output_path / f"rx_{mic_idx}"
-            rx_folder.mkdir(exist_ok=True)
+def main():
+    parser = argparse.ArgumentParser(description="Format real WAV data into npz files.")
+    parser.add_argument("--data_dir", type=Path, required=True, help="Directory containing WAV files")
+    parser.add_argument("--output_dir", type=Path, required=True, help="Output directory")
+    args = parser.parse_args()
 
-            for ch in range(num_channels):
-                rx_index = [i for i in range(24) if i != spk_idx][mic_idx]
+    convert_ir_to_npz(args.data_dir, args.output_dir)
 
-                spk_file_id = all_centers_index_to_wav_index(spk_idx)
-                rx_file_id = all_centers_index_to_wav_index(rx_index)
-                wav_name = f"{spk_file_id:02d}_{rx_file_id:02d}_{ch+1}.wav"
-                wav_path = ir_dir / wav_name
-
-                if not wav_path.exists():
-                    print(f"Missing: {wav_name}")
-                    continue
-
-                ir, sr = sf.read(wav_path)
-                ir = ir[ir_start:ir_start+ir_len]
-
-                np.savez(
-                    rx_folder / f"ir_{str(ch).zfill(6)}.npz",
-                    ir=np.array(ir),
-                    position_rx=rx_pos[s_idx, mic_idx, ch],
-                    position_tx=tx_pos[s_idx]
-                )
-
-    print(f"sampling_rate: {sr}")
-    print(f"ir_len: {ir_len}")
 
 if __name__ == "__main__":
-    convert_ir_to_npz("../ir_peak_same", "./outputs/real_exp_8720", ir_start=8720, ir_len=1600)
+    main()
