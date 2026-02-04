@@ -1,0 +1,142 @@
+study:
+  study_name: avr_optuna
+  n_trials: 50
+  direction: minimize
+doa_metric:
+  algorithm: NormMUSIC
+  n_fft: 512
+  fallback_value: 999.0
+setting:
+  fs: 16000
+  speed: 343.8
+  xyz_min: 0
+  xyz_max: 10
+  model_type: AVR
+  dir_ch: 8
+  T_max: 49800
+  grad_clip_norm: 1
+  resume: false
+  batch_size: 8
+  save_best_k: 10
+  val_freq: 166
+  load_workers: 4
+param:
+  near: 0
+  far: 6
+  n_samples: 64
+  n_azi: 64
+  n_ele: 32
+  pathloss: 1.5
+  lr: 5.0e-4
+  eta_min: 5.0e-5
+  weight_decay: 0.0
+  spec_loss_weight: 2
+  amplitude_loss_weight: 4
+  angle_loss_weight: 1
+  time_loss_weight: 50
+  energy_loss_weight: 1
+  multistft_loss_weight: 1
+  das_loss_weight: 0
+  softargmax_beta: 100
+model:
+  signal_output_dim: 1600
+  pos_encoding_sigma:
+    otype: HashGrid
+    n_levels: 20
+    n_features_per_level: 2
+    log2_hashmap_size: 18
+    base_resolution: 16
+  dir_encoding_sig:
+    otype: HashGrid
+    n_levels: 20
+    n_features_per_level: 2
+    log2_hashmap_size: 18
+    base_resolution: 16
+  tx_encoding_sig:
+    otype: HashGrid
+    n_levels: 20
+    n_features_per_level: 2
+    log2_hashmap_size: 18
+    base_resolution: 16
+  sigma_encoder_network:
+    otype: CutlassMLP
+    activation: ReLU
+    output_activation: None
+    n_hidden_layers: 3
+    n_neurons: 128
+  sigma_decoder_network:
+    otype: CutlassMLP
+    activation: ReLU
+    output_activation: None
+    n_hidden_layers: 3
+    n_neurons: 128
+  signal_network:
+    otype: CutlassMLP
+    activation: ReLU
+    output_activation: None
+    n_hidden_layers: 3
+    n_neurons: 512
+  channel_embed:
+    is_sigma_encoder: true
+    is_sigma_decoder: true
+    is_signal_network: true
+fixed:
+  param.near: 0
+  param.far: 6
+  param.n_ele: 32
+  param.pathloss: 1.5
+search_space:
+  param.lr:
+    type: float
+    low: 1.0e-6
+    high: 1.0e-3
+    log: true
+  param.eta_min:
+    type: float
+    low: 1.0e-6
+    high: 1.0e-4
+    log: true
+  param.n_samples:
+    type: int
+    low: 40
+    high: 80
+  param.n_azi:
+    type: int
+    low: 48
+    high: 80
+  param.weight_decay:
+    type: float
+    low: 0.0
+    high: 1.0e-3
+  param.spec_loss_weight:
+    type: float
+    low: 0
+    high: 100
+  param.angle_loss_weight:
+    type: float
+    low: 0
+    high: 100
+  param.time_loss_weight:
+    type: float
+    low: 0
+    high: 100
+  param.energy_loss_weight:
+    type: float
+    low: 0
+    high: 100
+  param.multistft_loss_weight:
+    type: float
+    low: 0
+    high: 100
+  model.sigma_encoder_network.n_neurons:
+    type: int
+    low: 64
+    high: 256
+  model.sigma_decoder_network.n_neurons:
+    type: int
+    low: 64
+    high: 256
+  model.signal_network.n_neurons:
+    type: int
+    low: 256
+    high: 1024

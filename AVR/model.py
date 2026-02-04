@@ -70,23 +70,15 @@ class AVRModel(nn.Module):
 
         ch = cfg.get("channel_embed") or {}
         is_embed = ch.get("is_embed", False)
-        conn_type = ch.get("connection_type", None)  # 'add' or 'concat'
         self.ch_num = ch.get("ch_num", 0)
-
-        self.emb_dim_enc = ch.get("emb_dim_sigma_encoder", 0)
-        self.emb_dim_dec = ch.get("emb_dim_sigma_decoder", 0)
-        self.emb_dim_sig = ch.get("emb_dim_signal_network", 0)
 
         flag_enc = bool(ch.get("is_sigma_encoder", False))
         flag_dec = bool(ch.get("is_sigma_decoder", False))
         flag_sig = bool(ch.get("is_signal_network", False))
 
-        self.enc_injection = is_embed and (conn_type == "add")    and flag_enc
-        self.dec_injection = is_embed and (conn_type == "add")    and flag_dec
-        self.sig_injection = is_embed and (conn_type == "add")    and flag_sig
-        self.enc_concat    = is_embed and (conn_type == "concat") and flag_enc
-        self.dec_concat    = is_embed and (conn_type == "concat") and flag_dec
-        self.sig_concat    = is_embed and (conn_type == "concat") and flag_sig
+        self.enc_injection = is_embed and flag_enc
+        self.dec_injection = is_embed and flag_dec
+        self.sig_injection = is_embed and flag_sig
 
         sigma_encoder_cfg = cfg["sigma_encoder_network"]
         sigma_decoder_cfg = cfg["sigma_decoder_network"]
@@ -105,21 +97,13 @@ class AVRModel(nn.Module):
             )
             self.encoder_mode = "injection"
         else:
-            if self.enc_concat:
-                self.encoder_channel_embedding = nn.Parameter(
-                    torch.randn(self.ch_num, self.emb_dim_enc) / math.sqrt(self.emb_dim_enc),
-                    requires_grad=True
-                )
-                enc_in = self._pos_encoding.n_output_dims + self.emb_dim_enc
-            else:
-                enc_in = self._pos_encoding.n_output_dims
-
+            enc_in = self._pos_encoding.n_output_dims
             self._model_encoder_sigma = tcnn.Network(
                 n_input_dims=enc_in,
                 n_output_dims=128,
                 network_config=sigma_encoder_cfg
             )
-            self.encoder_mode = "concat" if self.enc_concat else "none"
+            self.encoder_mode = "none"
 
         # ===== Sigma Decoder =====
         if self.dec_injection:
@@ -134,21 +118,13 @@ class AVRModel(nn.Module):
             )
             self.decoder_mode = "injection"
         else:
-            if self.dec_concat:
-                self.decoder_channel_embedding = nn.Parameter(
-                    torch.randn(self.ch_num, self.emb_dim_dec) / math.sqrt(self.emb_dim_dec),
-                    requires_grad=True
-                )
-                dec_in = 128 + self.emb_dim_dec
-            else:
-                dec_in = 128
-
+            dec_in = 128
             self._model_decoder_sigma = tcnn.Network(
                 n_input_dims=dec_in,
                 n_output_dims=1,
                 network_config=sigma_decoder_cfg
             )
-            self.decoder_mode = "concat" if self.dec_concat else "none"
+            self.decoder_mode = "none"
         
         # ===== Signal Network =====
         base_sig_in = 128 + self._dir_encoding.n_output_dims + self._tx_encoding.n_output_dims
@@ -164,21 +140,13 @@ class AVRModel(nn.Module):
             )
             self.signal_mode = "injection"
         else:
-            if self.sig_concat:
-                self.signal_channel_embedding = nn.Parameter(
-                    torch.randn(self.ch_num, self.emb_dim_sig) / math.sqrt(self.emb_dim_sig),
-                    requires_grad=True
-                )
-                sig_in = base_sig_in + self.emb_dim_sig
-            else:
-                sig_in = base_sig_in
-
+            sig_in = base_sig_in
             self._model_signal = tcnn.Network(
                 n_input_dims=sig_in,
                 n_output_dims=self.signal_output_dim,
                 network_config=signal_network_cfg
             )
-            self.signal_mode = "concat" if self.sig_concat else "none"
+            self.signal_mode = "none"
 
     def forward(self, pts, view, tx, ch_idx=None):
         bs = pts.size(0)
@@ -198,21 +166,13 @@ class AVRModel(nn.Module):
         if self.encoder_mode == "injection":
             sigma_feat = self._model_encoder_sigma(pos_enc, ch_idx_expanded)
         else:
-            if self.encoder_mode == "concat" and ch_idx_expanded is not None:
-                enc_emb = self.encoder_channel_embedding[ch_idx_expanded]
-                enc_in = torch.cat([pos_enc, enc_emb], dim=-1)
-            else:
-                enc_in = pos_enc
-            sigma_feat = self._model_encoder_sigma(enc_in)
+            sigma_feat = self._model_encoder_sigma(pos_enc)
 
         # ----- Sigma Decoder -----
         dec_in = F.relu(sigma_feat)
         if self.decoder_mode == "injection":
             attn = self._model_decoder_sigma(dec_in, ch_idx_expanded)
         else:
-            if self.decoder_mode == "concat" and ch_idx_expanded is not None:
-                dec_emb = self.decoder_channel_embedding[ch_idx_expanded]
-                dec_in = torch.cat([dec_in, dec_emb], dim=-1)
             attn = self._model_decoder_sigma(dec_in)
 
         # === Signal network ===
@@ -223,12 +183,7 @@ class AVRModel(nn.Module):
         if self.signal_mode == "injection":
             signal_output = self._model_signal(signal_base, ch_idx_expanded)
         else:
-            if self.signal_mode == "concat" and ch_idx_expanded is not None:
-                sig_emb = self.signal_channel_embedding[ch_idx_expanded]
-                signal_in = torch.cat([signal_base, sig_emb], dim=-1)
-            else:
-                signal_in = signal_base
-            signal_output = self._model_signal(signal_in)
+            signal_output = self._model_signal(signal_base)
 
         attn = abs(F.leaky_relu(attn)).view(bs, n_ray_points, 1)
         signal_output = signal_output.view(bs, n_ray_points, self.signal_output_dim)

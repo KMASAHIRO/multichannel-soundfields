@@ -298,9 +298,9 @@ YAMLファイルで以下の内容を設定します。
 | param.das_loss_weight | 0 | 音源方向推定の損失項係数（`model_type`が`AVR++`のときのみ） |
 | param.softargmax_beta | 100 | 音源方向推定の損失計算に使うsoft-argmaxの温度パラメータ（`model_type`が`AVR++`のときのみ） |
 | model.signal_output_dim | 1600 | 出力信号の長さ（サンプル数） |
-| model.channel_embed.is_sigma_encoder | True | sigma encoderに多チャンネル埋め込みベクトルを加えるか（`model_type`が`AVR`または`AVR++`のとき） |
-| model.channel_embed.is_sigma_decoder | True | sigma decoderに多チャンネル埋め込みベクトルを加えるか（`model_type`が`AVR`または`AVR++`のとき） |
-| model.channel_embed.is_signal_network | True | signal networkに多チャンネル埋め込みベクトルを加えるか（`model_type`が`AVR`または`AVR++`のとき） |
+| model.channel_embed.is_sigma_encoder | True | sigma encoderに多チャンネル埋め込みベクトルを加えるか（`model_type`が`AVR+`または`AVR++`のとき） |
+| model.channel_embed.is_sigma_decoder | True | sigma decoderに多チャンネル埋め込みベクトルを加えるか（`model_type`が`AVR+`または`AVR++`のとき） |
+| model.channel_embed.is_signal_network | True | signal networkに多チャンネル埋め込みベクトルを加えるか（`model_type`が`AVR+`または`AVR++`のとき） |
 | model.sigma_encoder_network.n_hidden_layers | 3 | sigma encoder の隠れ層の数 |
 | model.sigma_encoder_network.n_neurons | 128 | sigma encoder の中間層次元数 |
 | model.sigma_decoder_network.n_hidden_layers | 3 | sigma decoder の隠れ層の数 |
