@@ -1,0 +1,5 @@
+doa_algorithm: NormMUSIC
+fs: 16000
+n_fft: 512
+hop_size: 128
+window: hann
