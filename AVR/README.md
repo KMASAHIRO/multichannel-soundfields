@@ -31,7 +31,7 @@ AVRに加え、チャンネル番号に対応する埋め込みベクトルを�
 ## リポジトリ構成
 
 ```text
-NAF/
+AVR/
 ├ README.md                     ドキュメント
 ├ requirements.txt              依存関係
 ├ config_files/                 各種設定ファイル（YAML）
@@ -170,7 +170,7 @@ YAMLファイルで以下の内容を設定します。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
-| study.study_name | naf_plus_optuna | Optunaのstudy名 |
+| study.study_name | avr_optuna | Optunaのstudy名 |
 | study.n_trials | 50 | 試行回数 |
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
 | doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
@@ -360,7 +360,7 @@ train_output_dir/
 
 | 入力 | 説明 |
 |---|---|
-| [推論設定ファイル](#推論設定ファイル) | NAFの推論条件 |
+| [推論設定ファイル](#推論設定ファイル) | AVRの推論条件 |
 | 学習済みモデルの重み | 学習済みモデルのチェックポイント |
 | [送信機データファイル](#送信機データファイル) | 送信機（スピーカー）の位置 |
 | [受信機データファイル](#受信機データファイル) | 受信機（マイクロフォンアレイ）の位置 |
