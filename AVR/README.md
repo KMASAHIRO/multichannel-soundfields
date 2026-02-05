@@ -56,12 +56,10 @@ NAF/
 ## 実行手順
 
 1. リポジトリのクローン
-
-```
-git clone https://github.com/KMASAHIRO/multichannel-soundfields  
-cd multichannel-soundfields/AVR
-```
-
+  ```
+  git clone https://github.com/KMASAHIRO/multichannel-soundfields  
+  cd multichannel-soundfields/AVR
+  ```
 2. 依存関係のインストール
 
 ```
