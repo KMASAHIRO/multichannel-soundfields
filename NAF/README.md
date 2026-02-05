@@ -124,7 +124,7 @@ NAF/
 8. 推論
     ```
     python inference.py \
-      --config config_files/test_config.yml \
+      --config config_files/inference_config.yml \
       --chkpt checkpoint.chkpt \
       --speaker config_files/speaker_data.json \
       --receiver config_files/receiver_data.json \
