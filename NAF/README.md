@@ -171,7 +171,7 @@ dataset_dir/
 #### 前処理設定ファイル
 
 YAMLファイルで以下の内容を設定します。  
-具体的な書き方は[`preprocess_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/config_files/preprocess_config.yml)を参照してください。  
+具体的な書き方は[`preprocess_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/preprocess_config.yml)を参照してください。  
 NAFのモデルタイプにおける`NAF+`は、`NAF`を多チャンネルデータ用に拡張したモデルです。
 
 | 項目 | デフォルト値 | 説明 |
@@ -211,7 +211,7 @@ preprocessed_data_dir/
 #### ハイパラチューニング設定ファイル
 
 YAMLファイルで以下の内容を設定します。  
-具体的な書き方は[`optuna_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/config_files/optuna_config.yml)を参照してください。
+具体的な書き方は[`optuna_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/optuna_config.yml)を参照してください。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
@@ -309,7 +309,7 @@ optuna_output_dir/
 #### 学習設定ファイル
 
 YAMLファイルで以下の内容を設定します。  
-具体的な書き方は[`train_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/config_files/train_config.yml)を参照してください。  
+具体的な書き方は[`train_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/train_config.yml)を参照してください。  
 `param.`で始まる項目は[ハイパラチューニング](#ハイパラチューニング)でチューニング可能なパラメータです。
 
 | 項目 | デフォルト値 | 説明 |
@@ -388,7 +388,7 @@ train_output_dir/
 #### 推論設定ファイル
 
 YAMLファイルで以下の内容を設定します。  
-具体的な書き方は[`inference_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/config_files/inference_config.yml)を参照してください。
+具体的な書き方は[`inference_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/inference_config.yml)を参照してください。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
