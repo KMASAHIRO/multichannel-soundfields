@@ -63,9 +63,11 @@ NAF/
     ```
     pip install -r requirements.txt
     ```
+
 3. データのダウンロード
-    a. 実データの場合
-        ```
+
+    a. 実データの場合 
+        
         curl -L -o real_wav_data.zip \
           https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/real_wav_data.zip
 
@@ -74,23 +76,23 @@ NAF/
         python ../real_data/data_formatting.py \
           --data_dir real_wav_data \
           --output_dir dataset_dir
-        ```
+        
+   
     b. シミュレーションデータ（AcoustiX）の場合
-        ```
+   
         curl -L -o AcoustiX_data.zip \
           https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/AcoustiX_data.zip
 
         unzip AcoustiX_data.zip
         mv AcoustiX_data dataset_dir
-        ```
+   
     c. シミュレーションデータ（Pyroomacoustics）の場合
-        ```
+   
         curl -L -o Pyroomacoustics_data.zip \
           https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/Pyroomacoustics_data.zip
 
         unzip Pyroomacoustics_data.zip
         mv Pyroomacoustics_data dataset_dir
-        ```
 
 4. 学習データと検証データの分割
     ```

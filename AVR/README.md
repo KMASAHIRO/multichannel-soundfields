@@ -98,26 +98,26 @@ NAF/
         unzip Pyroomacoustics_data.zip
         mv Pyroomacoustics_data dataset_dir
 
-5. 学習データと検証データの分割
+4. 学習データと検証データの分割
     ```
     python preprocess/split_train_val.py \
       --dataset_dir dataset_dir
     ```
-6. Optunaによるハイパラメータ探索
+5. Optunaによるハイパラメータ探索
     ```
     python optuna_tuning.py \
       --config config_files/optuna_config.yml \
       --data_dir dataset_dir \
       --output_dir optuna_output_dir
     ```
-7. 学習
+6. 学習
     ```
     python train.py \
       --config config_files/train_config.yml \
       --data_dir dataset_dir \
       --output_dir train_output_dir
     ```
-8. 推論
+7. 推論
     ```
     python inference.py \
       --config config_files/test_config.yml \
