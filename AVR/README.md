@@ -68,14 +68,44 @@ cd multichannel-soundfields/AVR
 pip install -r requirements.txt
 ```
 
-3. 学習データと検証データの分割
+3. データのダウンロード
+
+実データの場合
+```
+curl -L -o real_wav_data.zip \
+  https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/real_wav_data.zip
+
+unzip real_wav_data.zip
+
+python ../real_data/data_formatting.py \
+  --data_dir real_wav_data \
+  --output_dir dataset_dir
+```
+シミュレーションデータ（AcoustiX）の場合
+```
+curl -L -o AcoustiX_data.zip \
+  https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/AcoustiX_data.zip
+
+unzip AcoustiX_data.zip
+mv AcoustiX_data dataset_dir
+```
+シミュレーションデータ（Pyroomacoustics）の場合
+```
+curl -L -o Pyroomacoustics_data.zip \
+  https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/Pyroomacoustics_data.zip
+
+unzip Pyroomacoustics_data.zip
+mv Pyroomacoustics_data dataset_dir
+```
+
+4. 学習データと検証データの分割
 
 ```
 python preprocess/split_train_val.py \
   --dataset_dir dataset_dir
 ```
 
-4. Optunaによるハイパラメータ探索
+5. Optunaによるハイパラメータ探索
 
 ```
 python optuna_tuning.py \
@@ -84,7 +114,7 @@ python optuna_tuning.py \
   --output_dir optuna_output_dir
 ```
 
-5. 学習
+6. 学習
 
 ```
 python train.py \
@@ -93,14 +123,14 @@ python train.py \
   --output_dir train_output_dir
 ```
 
-6. 推論
+7. 推論
 
 ```
 python inference.py \
   --config config_files/test_config.yml \
   --ckpt checkpoint.tar \
   --speaker config_files/speaker_data.json \
-  --receiver config_files/receiver_data_NAF_plus.json \
+  --receiver config_files/receiver_data.json \
   --output_dir inference_output_dir
 ```
 
