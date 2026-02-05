@@ -64,7 +64,7 @@ pip install -r requirements.txt
 
 ```
 curl -L -o simu_input/AcoustiX_room.zip \
-  [URL]
+  https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/AcoustiX_room.zip
 
 unzip simu_input/AcoustiX_room.zip -d simu_input
 ```
