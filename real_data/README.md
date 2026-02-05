@@ -49,7 +49,9 @@ pip install -r requirements.txt
 3. 実データのダウンロード
 
 ```
-curl -L https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/real_wav_data.zip
+curl -L -o real_wav_data.zip \
+  https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/real_wav_data.zip
+
 unzip real_wav_data.zip
 ```
 
