@@ -56,17 +56,22 @@ NAF/
 ## 実行手順
 
 1. リポジトリのクローン
+   
     ```
     git clone https://github.com/KMASAHIRO/multichannel-soundfields  
     cd multichannel-soundfields/AVR
     ```
+    
 2. 依存関係のインストール
+   
     ```
     pip install -r requirements.txt
     ```
+    
 3. データのダウンロード
-    a. 実データの場合
-        ```
+
+    a. 実データの場合 
+        
         curl -L -o real_wav_data.zip \
           https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/real_wav_data.zip
 
@@ -75,44 +80,44 @@ NAF/
         python ../real_data/data_formatting.py \
           --data_dir real_wav_data \
           --output_dir dataset_dir
-        ```
+        
+   
     b. シミュレーションデータ（AcoustiX）の場合
-        ```
+   
         curl -L -o AcoustiX_data.zip \
           https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/AcoustiX_data.zip
 
         unzip AcoustiX_data.zip
         mv AcoustiX_data dataset_dir
-        ```
+   
     c. シミュレーションデータ（Pyroomacoustics）の場合
-        ```
+   
         curl -L -o Pyroomacoustics_data.zip \
           https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/Pyroomacoustics_data.zip
 
         unzip Pyroomacoustics_data.zip
         mv Pyroomacoustics_data dataset_dir
-        ```
 
-4. 学習データと検証データの分割
+5. 学習データと検証データの分割
     ```
     python preprocess/split_train_val.py \
       --dataset_dir dataset_dir
     ```
-5. Optunaによるハイパラメータ探索
+6. Optunaによるハイパラメータ探索
     ```
     python optuna_tuning.py \
       --config config_files/optuna_config.yml \
       --data_dir dataset_dir \
       --output_dir optuna_output_dir
     ```
-6. 学習
+7. 学習
     ```
     python train.py \
       --config config_files/train_config.yml \
       --data_dir dataset_dir \
       --output_dir train_output_dir
     ```
-7. 推論
+8. 推論
     ```
     python inference.py \
       --config config_files/test_config.yml \
