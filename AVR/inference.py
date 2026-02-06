@@ -27,7 +27,7 @@ def build_model_and_renderer(cfg: dict) -> Tuple[AVRModel, AVRRender]:
         channel_embed["is_embed"] = False
     else:
         channel_embed["is_embed"] = True
-        channel_embed["ch_num"] = setting["dir_ch"]
+        channel_embed["ch_num"] = setting["ch_num"]
     model_cfg["channel_embed"] = channel_embed
 
     model = AVRModel(model_cfg)
@@ -67,7 +67,7 @@ def main():
     cfg = load_yaml(Path(args.config))
     setting = cfg["setting"]
     model_type = setting["model_type"]
-    dir_ch = setting["dir_ch"]
+    ch_num = setting["ch_num"]
     seq_len = cfg["model"]["signal_output_dim"]
 
     output_dir = Path(args.output_dir)
@@ -87,11 +87,11 @@ def main():
     rx_positions = load_positions(Path(args.receiver), "positions")
 
     if rx_positions.ndim != 3:
-        raise ValueError("receiver positions must be (N_rx, N_ch, 3)")
+        raise ValueError("receiver positions must be (N_rx, ch_num, 3)")
     if tx_positions.ndim != 2:
         raise ValueError("speaker positions must be (N_tx, 3)")
-    if rx_positions.shape[1] != dir_ch:
-        raise ValueError(f"Expected N_ch={dir_ch}, got {rx_positions.shape[1]}")
+    if rx_positions.shape[1] != ch_num:
+        raise ValueError(f"Expected ch_num={ch_num}, got {rx_positions.shape[1]}")
 
     position_tx_list = []
     position_rx_list = []
@@ -106,14 +106,14 @@ def main():
                 else:
                     rx_center = rx.mean(axis=0)
                     rays_o = torch.tensor(
-                        np.repeat(rx_center[None, :], dir_ch, axis=0),
+                        np.repeat(rx_center[None, :], ch_num, axis=0),
                         dtype=torch.float32,
                         device=device,
                     )
-                    ch_idx = torch.arange(dir_ch, device=device, dtype=torch.long)
+                    ch_idx = torch.arange(ch_num, device=device, dtype=torch.long)
 
                 position_tx_batch = torch.tensor(
-                    np.repeat(tx[None, :], dir_ch, axis=0),
+                    np.repeat(tx[None, :], ch_num, axis=0),
                     dtype=torch.float32,
                     device=device,
                 )

@@ -61,7 +61,7 @@ for c_idx, (cx, cy, cz) in enumerate(rx_centers):
         y = cy + MIC_RADIUS * np.sin(theta)
         rx_positions[c_idx, ch] = [x, y, cz]
 
-# (N_rx, N_ch, 3) そのまま
+# (N_rx, ch_num, 3) そのまま
 N_RX = rx_positions.shape[0]
 
 
@@ -86,4 +86,4 @@ with open(RECEIVER_JSON_PATH, "w", encoding="utf-8") as f:
     json.dump(receiver_data, f, indent=4)
 
 print(f"[OK] speaker_data.json  -> {SPEAKER_JSON_PATH}  (N_tx={N_TX})")
-print(f"[OK] receiver_data.json -> {RECEIVER_JSON_PATH} (N_rx={N_RX}, N_ch={NUM_CHANNELS})")
+print(f"[OK] receiver_data.json -> {RECEIVER_JSON_PATH} (N_rx={N_RX}, ch_num={NUM_CHANNELS})")

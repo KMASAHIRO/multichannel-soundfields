@@ -8,12 +8,12 @@ from typing import List, Tuple, Dict, Any
 
 
 class AVRDataset(Dataset):
-    def __init__(self, dataset_dir: str, split: str, seq_len: int, model_type: str, dir_ch: int):
+    def __init__(self, dataset_dir: str, split: str, seq_len: int, model_type: str, ch_num: int):
         self.dataset_dir = Path(dataset_dir)
         self.split = split
         self.seq_len = seq_len
         self.model_type = model_type
-        self.dir_ch = dir_ch
+        self.ch_num = ch_num
 
         split_path = self.dataset_dir / "train_test_split.pkl"
         if not split_path.exists():
@@ -30,7 +30,7 @@ class AVRDataset(Dataset):
         self.files: List[Path] = [self.dataset_dir / Path(p) for p in rel_paths]
         self.samples: List[Tuple[int, int]] = []
         for file_idx, _ in enumerate(self.files):
-            for ch_idx in range(self.dir_ch):
+            for ch_idx in range(self.ch_num):
                 self.samples.append((file_idx, ch_idx))
 
     def __len__(self) -> int:
@@ -52,8 +52,8 @@ class AVRDataset(Dataset):
         position_rx = data["position_rx"]
         position_tx = data["position_tx"]
 
-        if ir.shape[0] != self.dir_ch:
-            raise ValueError(f"Expected ir shape (N_ch, ir_len) with N_ch={self.dir_ch}, got {ir.shape}")
+        if ir.shape[0] != self.ch_num:
+            raise ValueError(f"Expected ir shape (ch_num, ir_len) with ch_num={self.ch_num}, got {ir.shape}")
 
         ir_ch = ir[ch_idx][: self.seq_len]
         wave_signal = np.fft.rfft(ir_ch)

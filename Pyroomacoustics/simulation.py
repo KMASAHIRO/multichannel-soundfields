@@ -70,7 +70,7 @@ def simulate_pyroomacoustics_ir(config_path, speaker_path, receiver_path, output
             i for i, center in enumerate(rx_centers) if not np.allclose(center, tx_pos)
         ]
         rx_pos_valid = rx_positions[valid_rx_indices]
-        mic_positions = rx_pos_valid.reshape(-1, 3).T  # shape: (3, N_rx*N_ch)
+        mic_positions = rx_pos_valid.reshape(-1, 3).T  # shape: (3, N_rx*ch_num)
 
         room = pra.ShoeBox(
             room_dim,

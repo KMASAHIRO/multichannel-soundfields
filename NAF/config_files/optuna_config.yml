@@ -10,7 +10,7 @@ doa_metric:
 setting:
   gpus: 1
   model_type: NAF+
-  dir_ch: 8
+  ch_num: 8
   epochs: 50
   resume: False
   batch_size: 20
@@ -26,7 +26,7 @@ fixed:
   weight_decay_main: 0.0
   pixel_count: 2000
   grid_features: 64
-  dir_ch: 8
+  ch_num: 8
   batch_norm: none
   activation_func_name: default
   grid_gap: 0.25

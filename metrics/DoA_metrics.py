@@ -88,18 +88,18 @@ def _ensure_shapes(
         ir = ir[None, ...]
 
     if rx_positions.ndim != 3:
-        raise ValueError("rx_positions must be (N, N_ch, 2/3)")
+        raise ValueError("rx_positions must be (N, ch_num, 2/3)")
     if tx_positions.ndim != 2:
         raise ValueError("tx_positions must be (N, 2/3)")
     if ir.ndim != 3:
-        raise ValueError("ir must be (N, N_ch, T)")
+        raise ValueError("ir must be (N, ch_num, T)")
 
     if rx_positions.shape[0] != tx_positions.shape[0]:
         raise ValueError("rx_positions and tx_positions must have same N")
     if ir.shape[0] != rx_positions.shape[0]:
         raise ValueError("ir N must match rx_positions N")
     if ir.shape[1] != rx_positions.shape[1]:
-        raise ValueError("ir N_ch must match rx_positions N_ch")
+        raise ValueError("ir ch_num must match rx_positions ch_num")
 
     return ir, rx_positions, tx_positions
 

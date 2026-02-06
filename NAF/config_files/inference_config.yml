@@ -1,6 +1,6 @@
 model_param:
   model_type: NAF+
-  dir_ch: 8
+  ch_num: 8
   xy_min: [0, 0]
   xy_max: [6.110, 8.807]
   layers: 8

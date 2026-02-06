@@ -22,18 +22,18 @@ class kernel_linear_act(nn.Module):
         return self.block(input_x)
 
 class kernel_residual_fc_embeds(nn.Module):
-    def __init__(self, input_ch, dir_ch=4, intermediate_ch=512, grid_ch = 64, num_block=8, num_block_residual=0, output_ch=2, grid_gap=0.25, grid_bandwidth=0.25, bandwidth_min=0.1, bandwidth_max=0.5, float_amt=0.1, min_xy=None, max_xy=None, batch_norm="none", batch_norm_features=2000, activation_func_name="default", probe=False):
+    def __init__(self, input_ch, ch_num=4, intermediate_ch=512, grid_ch = 64, num_block=8, num_block_residual=0, output_ch=2, grid_gap=0.25, grid_bandwidth=0.25, bandwidth_min=0.1, bandwidth_max=0.5, float_amt=0.1, min_xy=None, max_xy=None, batch_norm="none", batch_norm_features=2000, activation_func_name="default", probe=False):
         super(kernel_residual_fc_embeds, self).__init__()
         # input_ch (int): number of ch going into the network
         # intermediate_ch (int): number of intermediate neurons
         # min_xy, max_xy are the bounding box of the room in real (not normalized) coordinates
         # probe = True returns the features of the last layer
 
-        self.dir_ch = dir_ch
+        self.ch_num = ch_num
 
-        if self.dir_ch > 1:
+        if self.ch_num > 1:
             for k in range(num_block - 1):
-                self.register_parameter("channel_{}".format(k),nn.Parameter(torch.randn(1, 1, self.dir_ch, intermediate_ch)/math.sqrt(intermediate_ch),requires_grad=True))
+                self.register_parameter("channel_{}".format(k),nn.Parameter(torch.randn(1, 1, self.ch_num, intermediate_ch)/math.sqrt(intermediate_ch),requires_grad=True))
         
         self.proj = basic_project2(input_ch + int(2*grid_ch), intermediate_ch)
 
@@ -102,19 +102,19 @@ class kernel_residual_fc_embeds(nn.Module):
         total_grid = torch.cat((grid_feat_v0, grid_feat_v1), dim=-1).unsqueeze(1).expand(-1, SAMPLES, -1)
 
         my_input = torch.cat((total_grid, input_stuff), dim=-1)
-        if self.dir_ch > 1:
-            out = self.proj(my_input).unsqueeze(2).repeat(1, 1, self.dir_ch, 1) + getattr(self, "channel_0")
+        if self.ch_num > 1:
+            out = self.proj(my_input).unsqueeze(2).repeat(1, 1, self.ch_num, 1) + getattr(self, "channel_0")
         else:
-            out = self.proj(my_input).unsqueeze(2).repeat(1, 1, self.dir_ch, 1)
+            out = self.proj(my_input).unsqueeze(2).repeat(1, 1, self.ch_num, 1)
         
         for k in range(len(self.layers)):
-            if self.dir_ch > 1:
+            if self.ch_num > 1:
                 out = self.layers[k](out) + getattr(self, "channel_{}".format(k + 1))
             else:
                 out = self.layers[k](out)
 
             if k == (self.blocks // 2 - 1):
-                out = out + self.residual_1(my_input).unsqueeze(2).repeat(1, 1, self.dir_ch, 1)
+                out = out + self.residual_1(my_input).unsqueeze(2).repeat(1, 1, self.ch_num, 1)
         if self.probe:
             return out
         return self.out_layer(out)

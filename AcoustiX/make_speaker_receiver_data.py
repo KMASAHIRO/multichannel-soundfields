@@ -79,13 +79,13 @@ N_RX = rx_positions.shape[0]
 # --- 送信機向き（N_tx, 3） ---
 tx_ori = np.tile(TX_ORIENTATION / np.linalg.norm(TX_ORIENTATION), (N_TX, 1))
 
-# --- 受信機向き（N_rx, N_ch, 3） ---
+# --- 受信機向き（N_rx, ch_num, 3） ---
 rx_ori = np.tile(
     RX_ORIENTATION / np.linalg.norm(RX_ORIENTATION),
     (N_RX, NUM_CHANNELS, 1),
 )
 
-# --- 指向性パターン（N_tx,), (N_rx, N_ch) ---
+# --- 指向性パターン（N_tx,), (N_rx, ch_num) ---
 tx_patterns = [TX_PATTERN_DEFAULT] * N_TX
 rx_patterns = [[RX_PATTERN_DEFAULT] * NUM_CHANNELS for _ in range(N_RX)]
 
@@ -115,4 +115,4 @@ with open(RECEIVER_JSON_PATH, "w", encoding="utf-8") as f:
     json.dump(receiver_data, f, indent=4)
 
 print(f"[OK] speaker_data.json  -> {SPEAKER_JSON_PATH}  (N_tx={N_TX})")
-print(f"[OK] receiver_data.json -> {RECEIVER_JSON_PATH} (N_rx={N_RX}, N_ch={NUM_CHANNELS})")
+print(f"[OK] receiver_data.json -> {RECEIVER_JSON_PATH} (N_rx={N_RX}, ch_num={NUM_CHANNELS})")

@@ -1,7 +1,7 @@
 setting:
   gpus: 1
   model_type: NAF+
-  dir_ch: 8
+  ch_num: 8
   epochs: 200
   resume: False
   batch_size: 20

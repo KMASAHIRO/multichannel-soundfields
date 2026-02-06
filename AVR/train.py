@@ -40,7 +40,7 @@ def build_model_and_renderer(cfg: dict) -> Tuple[AVRModel, AVRRender]:
         channel_embed["is_embed"] = False
     else:
         channel_embed["is_embed"] = True
-        channel_embed["ch_num"] = setting["dir_ch"]
+        channel_embed["ch_num"] = setting["ch_num"]
     model_cfg["channel_embed"] = channel_embed
 
     model = AVRModel(model_cfg)
@@ -108,7 +108,7 @@ def run_validation(
     doa_cfg = cfg.get("doa_metric", {})
     model_type = setting["model_type"]
     seq_len = cfg["model"]["signal_output_dim"]
-    dir_ch = setting["dir_ch"]
+    ch_num = setting["ch_num"]
 
     val_losses = {
         "spec": 0.0,
@@ -135,8 +135,8 @@ def run_validation(
             position_rx = data["position_rx"]
             position_tx = data["position_tx"]
 
-            if ir.shape[0] != dir_ch:
-                raise ValueError(f"Expected ir shape (N_ch, ir_len) with N_ch={dir_ch}, got {ir.shape}")
+            if ir.shape[0] != ch_num:
+                raise ValueError(f"Expected ir shape (ch_num, ir_len) with ch_num={ch_num}, got {ir.shape}")
 
             if ir.shape[-1] < seq_len:
                 pad = seq_len - ir.shape[-1]
@@ -149,14 +149,14 @@ def run_validation(
             else:
                 rx_center = position_rx.mean(axis=0)
                 rays_o = torch.tensor(
-                    np.repeat(rx_center[None, :], dir_ch, axis=0),
+                    np.repeat(rx_center[None, :], ch_num, axis=0),
                     dtype=torch.float32,
                     device=device,
                 )
-                ch_idx = torch.arange(dir_ch, device=device, dtype=torch.long)
+                ch_idx = torch.arange(ch_num, device=device, dtype=torch.long)
 
             position_tx_batch = torch.tensor(
-                np.repeat(position_tx[None, :], dir_ch, axis=0),
+                np.repeat(position_tx[None, :], ch_num, axis=0),
                 dtype=torch.float32,
                 device=device,
             )
@@ -298,14 +298,14 @@ def run_training(cfg: dict, data_dir: str, output_dir: str) -> None:
         split="train",
         seq_len=cfg["model"]["signal_output_dim"],
         model_type=model_type,
-        dir_ch=setting["dir_ch"],
+        ch_num=setting["ch_num"],
     )
     val_dataset = AVRDataset(
         dataset_dir=data_dir,
         split="test",
         seq_len=cfg["model"]["signal_output_dim"],
         model_type=model_type,
-        dir_ch=setting["dir_ch"],
+        ch_num=setting["ch_num"],
     )
 
     train_loader = torch.utils.data.DataLoader(

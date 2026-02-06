@@ -18,7 +18,7 @@ class DatasetConfig:
     pixel_count: int
     reg_eps: float
     model_type: str
-    dir_ch: int
+    ch_num: int
     xy_min: np.ndarray = None
     xy_max: np.ndarray = None
 
@@ -29,7 +29,7 @@ class soundsamples(torch.utils.data.Dataset):
         self.pixel_count = cfg.pixel_count
         self.pos_reg_amt = cfg.reg_eps
         self.model_type = cfg.model_type
-        self.dir_ch = 1 if self.model_type == "NAF" else cfg.dir_ch
+        self.ch_num = 1 if self.model_type == "NAF" else cfg.ch_num
 
         self.magnitudes_path = os.path.join(self.data_dir, "magnitudes.h5")
         self.phases_path = os.path.join(self.data_dir, "phases.h5")

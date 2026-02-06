@@ -86,7 +86,7 @@ def build_model(cfg, dataset, device):
 
     net = kernel_residual_fc_embeds(
         input_ch=input_ch,
-        dir_ch=cfg["dir_ch"],
+        ch_num=cfg["ch_num"],
         output_ch=2,
         intermediate_ch=cfg["features"],
         grid_ch=cfg["grid_features"],
@@ -185,8 +185,8 @@ def train_worker(rank, world_size, freeport, cfg):
             optimizer.zero_grad(set_to_none=False)
 
             output = ddp_net(total_in, non_norm_position.squeeze(1)).transpose(1, 2)
-            mag_loss = criterion(output[..., 0], gt[:, : cfg["dir_ch"]]) * cfg["mag_alpha"]
-            phase_loss = criterion(output[..., 1], gt[:, cfg["dir_ch"] :]) * cfg["phase_alpha"]
+            mag_loss = criterion(output[..., 0], gt[:, : cfg["ch_num"]]) * cfg["mag_alpha"]
+            phase_loss = criterion(output[..., 1], gt[:, cfg["ch_num"] :]) * cfg["phase_alpha"]
             loss = mag_loss + phase_loss
             loss.backward()
             optimizer.step()
@@ -253,11 +253,11 @@ def train_worker(rank, world_size, freeport, cfg):
 
                     mag_loss_val = criterion(
                         output_val_split[..., 0],
-                        gt_val[:, : cfg["dir_ch"], split_id * cfg["pixel_count"] : (split_id + 1) * cfg["pixel_count"]],
+                        gt_val[:, : cfg["ch_num"], split_id * cfg["pixel_count"] : (split_id + 1) * cfg["pixel_count"]],
                     ) * cfg["mag_alpha"]
                     phase_loss_val = criterion(
                         output_val_split[..., 1],
-                        gt_val[:, cfg["dir_ch"] :, split_id * cfg["pixel_count"] : (split_id + 1) * cfg["pixel_count"]],
+                        gt_val[:, cfg["ch_num"] :, split_id * cfg["pixel_count"] : (split_id + 1) * cfg["pixel_count"]],
                     ) * cfg["phase_alpha"]
                     loss_val = mag_loss_val + phase_loss_val
                     total_mag_val += float(mag_loss_val.detach())
@@ -270,11 +270,11 @@ def train_worker(rank, world_size, freeport, cfg):
 
                 # reconstruct specs
                 myout = output_val.cpu().numpy()
-                myout_mag = myout[..., 0].reshape(1, cfg["dir_ch"], dataset.sound_size[1], dataset.sound_size[2])
-                myout_phase = myout[..., 1].reshape(1, cfg["dir_ch"], dataset.sound_size[1], dataset.sound_size[2])
+                myout_mag = myout[..., 0].reshape(1, cfg["ch_num"], dataset.sound_size[1], dataset.sound_size[2])
+                myout_phase = myout[..., 1].reshape(1, cfg["ch_num"], dataset.sound_size[1], dataset.sound_size[2])
                 mygt = gt_val.cpu().numpy()
-                mygt_mag = mygt[:, : cfg["dir_ch"]].reshape(1, cfg["dir_ch"], dataset.sound_size[1], dataset.sound_size[2])
-                mygt_phase = mygt[:, cfg["dir_ch"] :].reshape(1, cfg["dir_ch"], dataset.sound_size[1], dataset.sound_size[2])
+                mygt_mag = mygt[:, : cfg["ch_num"]].reshape(1, cfg["ch_num"], dataset.sound_size[1], dataset.sound_size[2])
+                mygt_phase = mygt[:, cfg["ch_num"] :].reshape(1, cfg["ch_num"], dataset.sound_size[1], dataset.sound_size[2])
 
                 net_mag = (myout_mag * dataset.std.numpy() + dataset.mean.numpy())[0]
                 gt_mag = (mygt_mag * dataset.std.numpy() + dataset.mean.numpy())[0]
@@ -400,7 +400,7 @@ def train_worker(rank, world_size, freeport, cfg):
                         "window": cfg["window"],
                         "log_eps": cfg["log_eps"],
                         "model_type": cfg["model_type"],
-                        "dir_ch": cfg["dir_ch"],
+                        "ch_num": cfg["ch_num"],
                     },
                     ckpt_path,
                 )
@@ -420,7 +420,7 @@ def train_worker(rank, world_size, freeport, cfg):
                     "window": cfg["window"],
                     "log_eps": cfg["log_eps"],
                     "model_type": cfg["model_type"],
-                    "dir_ch": cfg["dir_ch"],
+                    "ch_num": cfg["ch_num"],
                 },
                 ckpt_path,
             )
@@ -462,7 +462,7 @@ def run_training(config_path: str, data_dir: str, output_dir: str):
     doa_metric = train_cfg.get("doa_metric", {})
 
     model_type = setting.get("model_type", "NAF+")
-    dir_ch = 1 if model_type == "NAF" else int(setting.get("dir_ch", 1))
+    ch_num = 1 if model_type == "NAF" else int(setting.get("ch_num", 1))
 
     cfg = {
         "output_dir": output_dir,
@@ -472,7 +472,7 @@ def run_training(config_path: str, data_dir: str, output_dir: str):
         "batch_size": int(setting.get("batch_size", 20)),
         "save_best_k": int(setting.get("save_best_k", 10)),
         "model_type": model_type,
-        "dir_ch": dir_ch,
+        "ch_num": ch_num,
         "mag_alpha": float(param.get("mag_alpha", 1.0)),
         "phase_alpha": float(param.get("phase_alpha", 1.0)),
         "lr_init": float(param.get("lr_init", 1.0e-3)),
@@ -517,7 +517,7 @@ def run_training(config_path: str, data_dir: str, output_dir: str):
         pixel_count=cfg["pixel_count"],
         reg_eps=cfg["reg_eps"],
         model_type=cfg["model_type"],
-        dir_ch=cfg["dir_ch"],
+        ch_num=cfg["ch_num"],
         xy_min=cfg.get("xy_min"),
         xy_max=cfg.get("xy_max"),
     )

@@ -160,12 +160,12 @@ dataset_dir/
 ├ ...
 ```
 
-各`rx_*.npz`の内容は以下の通りです。N_chは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
+各`rx_*.npz`の内容は以下の通りです。ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
 
 | key | dtype | shape | 内容 |
 |---|---|---|---|
-| ir | float32 | (N_ch, ir_len) | 多チャンネルインパルス応答 |
-| position_rx | float32 | (N_ch, 3) or (N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir | float32 | (ch_num, ir_len) | 多チャンネルインパルス応答 |
+| position_rx | float32 | (ch_num, 3) or (ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
 | position_tx | float32 | (3,) or (2,) | 送信機位置 [x, y, z] or [x, y] |
 
 #### 前処理設定ファイル
@@ -221,7 +221,7 @@ YAMLファイルで以下の内容を設定します。
 | doa_metric.fallback_value | 999.0 | 評価値が取得できない場合の代替値 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
-| setting.dir_ch | 8 | チャンネル数 |
+| setting.ch_num | 8 | チャンネル数 |
 | setting.xy_min | [0, 0] | xy座標の最小値 [m] |
 | setting.xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
@@ -283,18 +283,18 @@ optuna_output_dir/
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_val, 3) or (N_val, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_val, N_ch, 3) or (N_val, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
-| ir_gt        | float32   | (N_val, N_ch, ir_len) | 正解データの時間波形  |
-| ir_pred       | float32   | (N_val, N_ch, ir_len) | 推論結果の時間波形  |
+| position_rx | float32 | (N_val, ch_num, 3) or (N_val, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir_gt        | float32   | (N_val, ch_num, ir_len) | 正解データの時間波形  |
+| ir_pred       | float32   | (N_val, ch_num, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_val,)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
 | doa_gt_deg     | float32 | (N_val,)  | 正解データ波形から推定した音源方向 [°]               |
 | doa_pred_deg   | float32 | (N_val,)  | 推論結果波形から推定した音源方向 [°]             |
-| metric_angle   | float32 | (N_val, N_ch) | 位相の誤差        |
-| metric_amp     | float32 | (N_val, N_ch) | 振幅の誤差    |
-| metric_env_pct | float32 | (N_val, N_ch) | 包絡線の誤差 [%] |
-| metric_t60_pct | float32 | (N_val, N_ch) | 残響時間T60の誤差 [%]       |
-| metric_c50_db  | float32 | (N_val, N_ch) | 明瞭度C50の誤差 [dB]      |
-| metric_edt_ms  | float32 | (N_val, N_ch) | 初期残響時間EDTの誤差 [ms]      |
+| metric_angle   | float32 | (N_val, ch_num) | 位相の誤差        |
+| metric_amp     | float32 | (N_val, ch_num) | 振幅の誤差    |
+| metric_env_pct | float32 | (N_val, ch_num) | 包絡線の誤差 [%] |
+| metric_t60_pct | float32 | (N_val, ch_num) | 残響時間T60の誤差 [%]       |
+| metric_c50_db  | float32 | (N_val, ch_num) | 明瞭度C50の誤差 [dB]      |
+| metric_edt_ms  | float32 | (N_val, ch_num) | 初期残響時間EDTの誤差 [ms]      |
 
 ---
 
@@ -317,7 +317,7 @@ YAMLファイルで以下の内容を設定します。
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
-| setting.dir_ch | 8 | チャンネル数 |
+| setting.ch_num | 8 | チャンネル数 |
 | setting.xy_min | [0, 0] | xy座標の最小値 [m] |
 | setting.xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
@@ -393,7 +393,7 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
-| dir_ch | 8 | チャンネル数 |
+| ch_num | 8 | チャンネル数 |
 | xy_min | [0, 0] | xy座標の最小値 [m] |
 | xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
 | layers | 8 | MLPの総レイヤ数 |
@@ -426,11 +426,11 @@ YAMLファイルで以下の内容を設定します。
 #### 受信機データファイル
 
 受信機の位置を定義したJSONファイルを用意します。  
-`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はN_chチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
+`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はch_numチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
-| positions | list | (N_rx, N_ch, 3) | 受信機位置 [x, y, z] |
+| positions | list | (N_rx, ch_num, 3) | 受信機位置 [x, y, z] |
 
 ---
 
@@ -449,5 +449,5 @@ inference_output_dir/
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, N_ch, 3) or (N_inf, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
-| ir_pred       | float32   | (N_inf, N_ch, ir_len) | 推論結果の時間波形  |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |

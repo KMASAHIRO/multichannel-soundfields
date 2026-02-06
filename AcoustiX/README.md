@@ -155,13 +155,13 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 
 受信機（マイクロフォンアレイ）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
 指向性パターン`patterns`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
-`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はN_chチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
+`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はch_numチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
-| positions | list | (N_rx, N_ch, 3) | 受信機位置 [x, y, z] |
-| orientations | list | (N_rx, N_ch, 3) | 受信機の向き [x, y, z] |
-| patterns | list | (N_rx, N_ch) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+| positions | list | (N_rx, ch_num, 3) | 受信機位置 [x, y, z] |
+| orientations | list | (N_rx, ch_num, 3) | 受信機の向き [x, y, z] |
+| patterns | list | (N_rx, ch_num) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 [論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
 
@@ -193,12 +193,12 @@ output_dir/
 
 | key            | dtype   | shape | 内容                 |
 | -------------- | ------- | ----- | ------------------ |
-| ir             | float32 | (N_ch, ir_len)  | インパルス応答の波形      |
-| position_rx    | float32 | (N_ch, 3)  | 受信機位置 [x, y, z]  |
+| ir             | float32 | (ch_num, ir_len)  | インパルス応答の波形      |
+| position_rx    | float32 | (ch_num, 3)  | 受信機位置 [x, y, z]  |
 | position_tx    | float32 | (3,)  | 送信機位置 [x, y, z]    |
-| orientation_rx | float32 | (N_ch, 3)  | 受信機の向き [x, y, z] |
+| orientation_rx | float32 | (ch_num, 3)  | 受信機の向き [x, y, z] |
 | orientation_tx | float32 | (3,)  | 送信機の向き [x, y, z]   |
-| pattern_rx     | str     | (N_ch,)  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+| pattern_rx     | str     | (ch_num,)  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 | pattern_tx     | str     | ()  | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
 ---

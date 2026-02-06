@@ -54,7 +54,7 @@ def build_model(cfg, min_xy, max_xy, device):
 
     net = kernel_residual_fc_embeds(
         input_ch=input_ch,
-        dir_ch=cfg["dir_ch"],
+        ch_num=cfg["ch_num"],
         output_ch=2,
         intermediate_ch=cfg["features"],
         grid_ch=cfg["grid_features"],
@@ -91,8 +91,8 @@ def main():
     full_cfg = load_yaml(Path(args.config))
     cfg = full_cfg.get("model_param", {})
     model_type = cfg.get("model_type", "NAF+")
-    dir_ch = 1 if model_type == "NAF" else int(cfg.get("dir_ch", 1))
-    cfg["dir_ch"] = dir_ch
+    ch_num = 1 if model_type == "NAF" else int(cfg.get("ch_num", 1))
+    cfg["ch_num"] = ch_num
 
     with open(args.speaker, "r", encoding="utf-8") as f:
         speaker = json.load(f)
@@ -103,7 +103,7 @@ def main():
     rx_positions = np.asarray(receiver["positions"], dtype=np.float32)
 
     if rx_positions.ndim != 3:
-        raise ValueError("receiver positions must be (N_rx, N_ch, 2/3)")
+        raise ValueError("receiver positions must be (N_rx, ch_num, 2/3)")
 
     rx_original = rx_positions
     if model_type == "NAF":
@@ -166,7 +166,7 @@ def main():
         for tx in tx_positions:
             for rx in rx_positions:
                 if model_type == "NAF":
-                    # rx is (N_ch, D); predict each channel and stack
+                    # rx is (ch_num, D); predict each channel and stack
                     ir_ch_list = []
                     for ch in range(rx.shape[0]):
                         rx_point = rx[ch]
@@ -199,8 +199,8 @@ def main():
 
                         output = torch.cat(out_list, dim=2)
                         myout = output.cpu().numpy()
-                        myout_mag = myout[..., 0].reshape(1, dir_ch, F, T)
-                        myout_phase = myout[..., 1].reshape(1, dir_ch, F, T)
+                        myout_mag = myout[..., 0].reshape(1, ch_num, F, T)
+                        myout_phase = myout[..., 1].reshape(1, ch_num, F, T)
 
                         net_mag = (myout_mag * std + mean)[0]
                         net_phase = myout_phase[0] * phase_std
@@ -242,8 +242,8 @@ def main():
 
                     output = torch.cat(out_list, dim=2)
                     myout = output.cpu().numpy()
-                    myout_mag = myout[..., 0].reshape(1, dir_ch, F, T)
-                    myout_phase = myout[..., 1].reshape(1, dir_ch, F, T)
+                    myout_mag = myout[..., 0].reshape(1, ch_num, F, T)
+                    myout_phase = myout[..., 1].reshape(1, ch_num, F, T)
 
                     net_mag = (myout_mag * std + mean)[0]
                     net_phase = myout_phase[0] * phase_std

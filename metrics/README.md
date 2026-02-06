@@ -78,14 +78,14 @@ python compute_whitenoise_metrics.py \
 
 #### 推論結果
 
-[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#推論出力)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#推論出力)の推論結果と正解データの時間波形`ir_gt`を含む`results.npz`を用意します。形式は以下の通りです。N_infは推論データのサンプル数、N_chは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。なお、`ir_gt`が含まれていない場合、推論結果波形を用いた音源方向の推定のみ実行されます。
+[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#推論出力)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#推論出力)の推論結果と正解データの時間波形`ir_gt`を含む`results.npz`を用意します。形式は以下の通りです。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。なお、`ir_gt`が含まれていない場合、推論結果波形を用いた音源方向の推定のみ実行されます。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, N_ch, 3) or (N_inf, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
-| ir_pred       | float32   | (N_inf, N_ch, ir_len) | 推論結果の時間波形  |
-| ir_gt       | float32   | (N_inf, N_ch, ir_len) | 正解データの時間波形  |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |
+| ir_gt       | float32   | (N_inf, ch_num, ir_len) | 正解データの時間波形  |
 
 #### 評価設定ファイル
 
@@ -112,23 +112,23 @@ metrics_output_dir/
 └─ metrics_results.npz                 評価結果
 ```
 
-`metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、N_chは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
+`metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, N_ch, 3) or (N_inf, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
-| ir_gt        | float32   | (N_inf, N_ch, ir_len) | 正解データの時間波形  |
-| ir_pred       | float32   | (N_inf, N_ch, ir_len) | 推論結果の時間波形  |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir_gt        | float32   | (N_inf, ch_num, ir_len) | 正解データの時間波形  |
+| ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_inf,)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
 | doa_gt_deg     | float32 | (N_inf,)  | 正解データ波形から推定した音源方向 [°]               |
 | doa_pred_deg   | float32 | (N_inf,)  | 推論結果波形から推定した音源方向 [°]             |
-| metric_angle   | float32 | (N_inf, N_ch) | 位相の誤差        |
-| metric_amp     | float32 | (N_inf, N_ch) | 振幅の誤差    |
-| metric_env_pct | float32 | (N_inf, N_ch) | 包絡線の誤差 [%] |
-| metric_t60_pct | float32 | (N_inf, N_ch) | 残響時間T60の誤差 [%]       |
-| metric_c50_db  | float32 | (N_inf, N_ch) | 明瞭度C50の誤差 [dB]      |
-| metric_edt_ms  | float32 | (N_inf, N_ch) | 初期残響時間EDTの誤差 [ms]      |
+| metric_angle   | float32 | (N_inf, ch_num) | 位相の誤差        |
+| metric_amp     | float32 | (N_inf, ch_num) | 振幅の誤差    |
+| metric_env_pct | float32 | (N_inf, ch_num) | 包絡線の誤差 [%] |
+| metric_t60_pct | float32 | (N_inf, ch_num) | 残響時間T60の誤差 [%]       |
+| metric_c50_db  | float32 | (N_inf, ch_num) | 明瞭度C50の誤差 [dB]      |
+| metric_edt_ms  | float32 | (N_inf, ch_num) | 初期残響時間EDTの誤差 [ms]      |
 
 ---
 
@@ -166,14 +166,14 @@ whitenoise_metrics_output_dir/
 └─ whitenoise_metrics_results.npz                 評価結果
 ```
 
-`whitenoise_metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、N_chは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さ、N_timeframeはインパルス応答とホワイトノイズ畳み込み後の時間方向の分割数です。
+`whitenoise_metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さ、N_timeframeはインパルス応答とホワイトノイズ畳み込み後の時間方向の分割数です。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, N_ch, 3) or (N_inf, N_ch, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
-| ir_gt        | float32   | (N_inf, N_ch, ir_len) | 正解データの時間波形  |
-| ir_pred       | float32   | (N_inf, N_ch, ir_len) | 推論結果の時間波形  |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| ir_gt        | float32   | (N_inf, ch_num, ir_len) | 正解データの時間波形  |
+| ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_inf, N_timeframe)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
 | doa_gt_deg     | float32 | (N_inf, N_timeframe)  | 正解データ波形から推定した音源方向 [°]               |
 | doa_pred_deg   | float32 | (N_inf, N_timeframe)  | 推論結果波形から推定した音源方向 [°]             |
