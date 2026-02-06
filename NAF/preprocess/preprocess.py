@@ -21,7 +21,6 @@ def load_config(path: Path) -> dict:
     cfg.setdefault("window", "hann")
     cfg.setdefault("log_eps", 1e-3)
     cfg.setdefault("mag_std_eps", 0.1)
-    cfg.setdefault("model_type", "NAF+")
     return cfg
 
 
