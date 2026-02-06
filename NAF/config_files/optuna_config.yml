@@ -1,7 +1,7 @@
 study:
   study_name: naf_optuna
   direction: minimize
-  n_trials: 50
+  n_trials: 100
 
 doa_metric:
   algorithm: NormMUSIC
@@ -11,7 +11,7 @@ setting:
   gpus: 1
   model_type: NAF+
   dir_ch: 8
-  epochs: 200
+  epochs: 50
   resume: False
   batch_size: 20
   save_best_k: 10

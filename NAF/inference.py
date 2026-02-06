@@ -115,7 +115,8 @@ def main():
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    chkpt = torch.load(args.chkpt, map_location=device)
+    # PyTorch 2.6 defaults to weights_only=True; use full load for trusted checkpoints.
+    chkpt = torch.load(args.chkpt, map_location=device, weights_only=False)
     mean = chkpt.get("mean")
     std = chkpt.get("std")
     phase_std = float(chkpt.get("phase_std"))

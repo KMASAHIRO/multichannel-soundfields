@@ -16,22 +16,50 @@ def t60_EDT_cal(energys, init_db=-5, end_db=-25, factor=3.0, fs=16000):
     edt_all = []
 
     for energy in energys:
+        # Guard against empty or NaN energy arrays
+        if energy.size == 0 or np.all(np.isnan(energy)):
+            t60_all.append(np.nan)
+            edt_all.append(np.nan)
+            continue
+
+        def _nearest_idx(arr, target):
+            diff = np.abs(arr - target)
+            if np.all(np.isnan(diff)):
+                return None
+            return int(np.nanargmin(diff))
+
         # EDT
         edt_factor = 6.0
-        energy_n10db = energy[np.abs(energy - (-10)).argmin()]
-        n10db_sample = np.where(energy == energy_n10db)[0][0]
+        n10db_idx = _nearest_idx(energy, -10)
+        if n10db_idx is None:
+            t60_all.append(np.nan)
+            edt_all.append(np.nan)
+            continue
+        n10db_sample = n10db_idx
         edt = n10db_sample / fs * edt_factor  # 秒
 
         # T60
-        energy_init = energy[np.abs(energy - init_db).argmin()]
-        energy_end  = energy[np.abs(energy - end_db).argmin()]
-        init_sample = np.where(energy == energy_init)[0][0]
-        end_sample  = np.where(energy == energy_end)[0][0]
+        init_idx = _nearest_idx(energy, init_db)
+        end_idx = _nearest_idx(energy, end_db)
+        if init_idx is None or end_idx is None:
+            t60_all.append(np.nan)
+            edt_all.append(np.nan)
+            continue
+        init_sample = init_idx
+        end_sample = end_idx
+        if end_sample <= init_sample:
+            t60_all.append(np.nan)
+            edt_all.append(np.nan)
+            continue
 
         x = np.arange(init_sample, end_sample + 1) / fs
         y = energy[init_sample:end_sample + 1]
 
         slope, intercept = stats.linregress(x, y)[0:2]
+        if slope == 0 or np.isnan(slope):
+            t60_all.append(np.nan)
+            edt_all.append(np.nan)
+            continue
 
         db_regress_init = (init_db - intercept) / slope
         db_regress_end  = (end_db  - intercept) / slope

@@ -54,10 +54,15 @@ def _estimate_doa_deg(
     mic = rx_pos.T  # (dim, M)
     stfts = [_stft(ch, n_fft, hop=hop_size, window=window) for ch in ir]
     X = np.stack(stfts, axis=0)  # (M, F, T)
+    if not np.isfinite(X).all():
+        return float("nan")
 
     algo_cls = _resolve_algorithm(algorithm)
     doa = algo_cls(mic, fs=fs, nfft=n_fft, c=speed, num_src=1)
-    doa.locate_sources(X)
+    try:
+        doa.locate_sources(X)
+    except np.linalg.LinAlgError:
+        return float("nan")
 
     if algorithm.upper() == "FRIDA":
         deg = float(np.argmax(np.abs(doa._gen_dirty_img())))

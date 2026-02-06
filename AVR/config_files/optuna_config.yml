@@ -1,6 +1,6 @@
 study:
   study_name: avr_optuna
-  n_trials: 50
+  n_trials: 100
   direction: minimize
 doa_metric:
   algorithm: NormMUSIC
