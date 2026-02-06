@@ -39,20 +39,15 @@ metrics/
 
 ## 実行手順
 
-1. リポジトリのクローン
+[`AVR`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR)または[`NAF`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF)で推論まで実行してから、以下のコードを実行してください。
 
-```
-git clone https://github.com/KMASAHIRO/multichannel-soundfields  
-cd multichannel-soundfields/metrics
-```
-
-2. 依存関係のインストール
+1. 依存関係のインストール
 
 ```
 pip install -r requirements.txt
 ```
 
-3. 推論結果の評価
+2. 推論結果の評価
 
 ```
 python compute_metrics.py \
@@ -61,7 +56,7 @@ python compute_metrics.py \
   --output_dir metrics_output_dir
 ```
 
-4. ホワイトノイズ音源による推論結果の評価
+3. ホワイトノイズ音源による推論結果の評価
 
 python compute_whitenoise_metrics.py \
   --config config_files/whitenoise_metrics_config.yml \
