@@ -125,7 +125,7 @@ NAF/
     ```
     python inference.py \
       --config config_files/inference_config.yml \
-      --chkpt checkpoint.chkpt \
+      --chkpt train_output_dir/chkpt/best_epoch0001.chkpt \
       --speaker config_files/speaker_data.json \
       --receiver config_files/receiver_data.json \
       --output_dir inference_output_dir
