@@ -10,7 +10,7 @@
 
 - Python 3.9
 - NumPy 1.23
-- Pyroomacoustics 0.7
+- Pyroomacoustics 0.8
 
 詳細な依存関係および正確なバージョンについては、[`requirements.txt`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/requirements.txt) を参照してください。
 

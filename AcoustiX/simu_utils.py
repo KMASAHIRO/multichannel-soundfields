@@ -11,7 +11,6 @@ import json
 from sionna.rt import load_scene, Transmitter, Receiver, PlanarArray, RadioMaterial, LambertianPattern
 from sionna import SPEED_OF_LIGHT, DIELECTRIC_PERMITTIVITY_VACUUM
 
-from ir_utils import compute_metric
 from pattern import Pattern
 
 
@@ -303,61 +302,6 @@ def ir_simulation(
     rx_ori = rx_ori[valid_ir]
 
     return ir_samples, rx_pos, rx_ori
-
-
-
-def plot_figure(ir_samples, rx_pos, tx_pos, rx_ori, tx_ori, fs):
-    for i in range(len(ir_samples)):
-        sampled_ir = ir_samples[i]
-        fft_signal = np.fft.fft(sampled_ir)
-
-        energy, t60, C50 = compute_metric(sampled_ir, fs)
- 
-        plt.figure(figsize=(12,12))
-        plt.suptitle(f"t60 = {t60}, C50 = {C50}")
-
-        plt.subplot(221)
-        plt.title("Simulated impulse response")
-        plt.plot(sampled_ir)
-
-        plt.subplot(222)
-        plt.title("IR energy decay trend")
-        plt.plot(energy)
-
-        plt.subplot(223)
-        plt.title("Channel Impulse response")
-        plt.plot(np.abs(fft_signal))
-
-        plt.subplot(224)
-        plt.title("Position of both speaker and microphone")
-        plt.scatter(rx_pos[:,0], rx_pos[:,1])
-        plt.scatter(rx_pos[i,0], rx_pos[i,1], c='r', s=100)
-        plt.quiver(rx_pos[i, 0], rx_pos[i, 1], rx_ori[i,0], rx_ori[i,1], angles='xy', scale_units='xy', scale=1, color='r', width=0.005)
-        plt.scatter(tx_pos[0], tx_pos[1], c='b',s=100)
-        plt.quiver(tx_pos[0], tx_pos[1], tx_ori[0], tx_ori[1], angles='xy', scale_units='xy', scale=1, color='r', width=0.005)
-
-        plt.axis("equal")
-        plt.grid(True)
-        plt.show()
-
-
-def save_ir(ir_samples, rx_pos, rx_ori, tx_pos, tx_ori, save_path, prefix):
-    """ Function to save the impulse response samples
-    """
-    for i in range(ir_samples.shape[0]):
-        ir = ir_samples[i,:]
-        position_rx = rx_pos[i,:]
-        orientation_rx = rx_ori[i,:]
-        position_tx = tx_pos
-        orientation_tx = tx_ori
-
-        np.savez(os.path.join(save_path, f'ir_{str(int(prefix+i)).zfill(6)}.npz'),
-                ir=ir,
-                position_rx=position_rx,
-                position_tx=position_tx,
-                orientation_rx=orientation_rx,
-                orientation_tx=orientation_tx)
-
 
 
 def generate_rx_samples(n_random_samples, xyz_max, xyz_min):
