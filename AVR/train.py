@@ -232,11 +232,15 @@ def run_validation(
     if doa_pred_deg is None:
         score = fallback
     else:
-        err = angular_error_deg(doa_pred_deg, doa_true_deg)
-        if np.isnan(err).any():
+        valid = ~np.isnan(doa_pred_deg)
+        if not np.any(valid):
             score = fallback
         else:
-            score = float(np.mean(err))
+            err = angular_error_deg(doa_pred_deg[valid], doa_true_deg[valid])
+            if np.isnan(err).any():
+                score = fallback
+            else:
+                score = float(np.mean(err))
 
     return val_losses, val_results, score
 

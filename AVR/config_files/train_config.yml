@@ -9,7 +9,7 @@ setting:
   xyz_max: 10
   model_type: AVR
   dir_ch: 8
-  T_max: 49800
+  T_max: 8300
   grad_clip_norm: 1
   resume: false
   batch_size: 8

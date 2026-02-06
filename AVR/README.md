@@ -63,9 +63,12 @@ AVR/
     ```
     
 2. 依存関係のインストール
-   
+
     ```
     pip install -r requirements.txt
+
+    module load cuda/12.6
+    pip install git+https://github.com/NVlabs/tiny-cuda-nn@48d6989c95def307a40baf176b2d6015dada19f9#subdirectory=bindings/torch
     ```
     
 3. データのダウンロード
@@ -121,7 +124,7 @@ AVR/
     ```
     python inference.py \
       --config config_files/inference_config.yml \
-      --ckpt checkpoint.tar \
+      --ckpt train_output_dir/ckpt/best0001.tar \
       --speaker config_files/speaker_data.json \
       --receiver config_files/receiver_data.json \
       --output_dir inference_output_dir
@@ -181,7 +184,7 @@ YAMLファイルで以下の内容を設定します。
 | setting.xyz_max | 10 | xyz座標の最大値 [m] |
 | setting.model_type | AVR | AVRのモデルタイプ（`AVR` / `AVR+` / `AVR++`） |
 | setting.dir_ch | 8 | チャンネル数 |
-| setting.T_max | 49800 | 総学習ステップ数 |
+| setting.T_max | 8300 | 総学習ステップ数 |
 | setting.grad_clip_norm | 1 | 勾配クリップの大きさ |
 | setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 8 | 学習時のバッチサイズ |
@@ -293,7 +296,7 @@ YAMLファイルで以下の内容を設定します。
 | setting.xyz_max | 10 | xyz座標の最大値 [m] |
 | setting.model_type | AVR | AVRのモデルタイプ（`AVR` / `AVR+` / `AVR++`） |
 | setting.dir_ch | 8 | チャンネル数 |
-| setting.T_max | 49800 | 総学習ステップ数 |
+| setting.T_max | 8300 | 総学習ステップ数 |
 | setting.grad_clip_norm | 1 | 勾配クリップの大きさ |
 | setting.resume | False | チェックポイントから再開するかどうか |
 | setting.batch_size | 8 | 学習時のバッチサイズ |

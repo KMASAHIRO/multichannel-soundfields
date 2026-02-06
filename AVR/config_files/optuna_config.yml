@@ -13,7 +13,7 @@ setting:
   xyz_max: 10
   model_type: AVR
   dir_ch: 8
-  T_max: 49800
+  T_max: 8300
   grad_clip_norm: 1
   resume: false
   batch_size: 8
@@ -129,14 +129,20 @@ search_space:
     low: 0
     high: 100
   model.sigma_encoder_network.n_neurons:
-    type: int
-    low: 64
-    high: 256
+    type: categorical
+    choices:
+      - 64
+      - 128
+      - 256
   model.sigma_decoder_network.n_neurons:
-    type: int
-    low: 64
-    high: 256
+    type: categorical
+    choices:
+      - 64
+      - 128
+      - 256
   model.signal_network.n_neurons:
-    type: int
-    low: 256
-    high: 1024
+    type: categorical
+    choices:
+      - 256
+      - 512
+      - 1024

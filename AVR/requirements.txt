@@ -1,6 +1,6 @@
-torch==2.2.2+cu118
-torchaudio==2.2.2+cu118
-torchvision==0.17.2+cu118
+torch==2.2.2
+torchaudio==2.2.2
+torchvision==0.17.2
 numpy==1.26.4
 scipy==1.13.1
 pandas==2.3.2
@@ -20,4 +20,8 @@ scikit-learn==1.6.1
 cmake==4.0.2
 pybind11==3.0.0
 Cython==3.1.2
-tinycudann @ git+https://github.com/NVlabs/tiny-cuda-nn@48d6989c95def307a40baf176b2d6015dada19f9#subdirectory=bindings/torch
+auraloss==0.4.0
+ninja==1.13.0
+setuptools==53.0.0
+wheel==0.46.3
+packaging==26.0
