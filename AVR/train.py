@@ -1,5 +1,6 @@
 import argparse
 import os
+import shutil
 from pathlib import Path
 from typing import Dict, Tuple, List
 
@@ -406,7 +407,7 @@ def run_training(cfg: dict, data_dir: str, output_dir: str) -> None:
                 np.savez_compressed(loss_dir / f"epoch{eval_count:04d}.npz", **loss_payload)
                 np.savez_compressed(val_dir / f"epoch{eval_count:04d}.npz", **val_results)
 
-                ckpt_path = ckpt_dir / f"best{eval_count:04d}.tar"
+                ckpt_path = ckpt_dir / f"eval{eval_count:04d}.tar"
                 torch.save(
                     {
                         "model_state_dict": renderer.state_dict(),
@@ -422,12 +423,28 @@ def run_training(cfg: dict, data_dir: str, output_dir: str) -> None:
                 best_scores.append((score, ckpt_path))
                 best_scores.sort(key=lambda x: x[0])
                 if len(best_scores) > save_best_k:
-                    _, remove_path = best_scores.pop(-1)
-                    if remove_path.exists():
-                        remove_path.unlink()
+                    best_scores.pop(-1)
+                # Rebuild top-k checkpoint links/copies each eval (replace per-rank)
+                desired = set()
+                for rank, (_, src) in enumerate(best_scores, start=1):
+                    dst = ckpt_dir / f"best{rank:04d}.tar"
+                    desired.add(dst)
+                    if dst.exists():
+                        dst.unlink()
+                    try:
+                        os.link(src, dst)
+                    except OSError:
+                        shutil.copy2(src, dst)
+                for p in ckpt_dir.glob("best*.tar"):
+                    if p not in desired:
+                        p.unlink()
 
                 train_acc = {k: 0.0 for k in train_acc}
                 train_acc["count"] = 0
+
+    # Cleanup eval checkpoints after training
+    for p in ckpt_dir.glob("eval*.tar"):
+        p.unlink()
 
 
 def main():

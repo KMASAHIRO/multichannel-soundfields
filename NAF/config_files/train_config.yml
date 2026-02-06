@@ -33,6 +33,8 @@ param:
   embed_time_max_freq: 10
   embed_freq_num_freqs: 10
   embed_freq_max_freq: 10
+  xy_min: [0, 0]
+  xy_max: [6.110, 8.807]
 
 doa_metric:
   algorithm: NormMUSIC

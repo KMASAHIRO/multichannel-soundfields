@@ -19,6 +19,8 @@ class DatasetConfig:
     reg_eps: float
     model_type: str
     dir_ch: int
+    xy_min: np.ndarray = None
+    xy_max: np.ndarray = None
 
 
 class soundsamples(torch.utils.data.Dataset):
@@ -63,6 +65,10 @@ class soundsamples(torch.utils.data.Dataset):
             all_xy = np.concatenate([all_tx[:, :2], all_rx[:, :2]], axis=0)
             self.min_pos = all_xy.min(axis=0)
             self.max_pos = all_xy.max(axis=0)
+
+        if cfg.xy_min is not None and cfg.xy_max is not None:
+            self.min_pos = np.asarray(cfg.xy_min, dtype=np.float32)
+            self.max_pos = np.asarray(cfg.xy_max, dtype=np.float32)
 
         self.sound_data = None
         self.phase_data = None

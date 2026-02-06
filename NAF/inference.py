@@ -82,7 +82,7 @@ def normalize_xy(xy: np.ndarray, min_xy: np.ndarray, max_xy: np.ndarray) -> np.n
 def main():
     parser = argparse.ArgumentParser(description="NAF inference")
     parser.add_argument("--config", required=True, help="Path to inference_config.yml")
-    parser.add_argument("--chkpt", required=True, help="Checkpoint path")
+    parser.add_argument("--ckpt", required=True, help="Checkpoint path")
     parser.add_argument("--speaker", required=True, help="Speaker positions json")
     parser.add_argument("--receiver", required=True, help="Receiver positions json")
     parser.add_argument("--output_dir", required=True, help="Output directory")
@@ -116,16 +116,16 @@ def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     # PyTorch 2.6 defaults to weights_only=True; use full load for trusted checkpoints.
-    chkpt = torch.load(args.chkpt, map_location=device, weights_only=False)
-    mean = chkpt.get("mean")
-    std = chkpt.get("std")
-    phase_std = float(chkpt.get("phase_std"))
-    sound_size = chkpt.get("sound_size")
-    max_len = int(chkpt.get("max_len"))
-    n_fft = int(chkpt.get("n_fft", 512))
-    hop_size = int(chkpt.get("hop_size", 128))
-    window = chkpt.get("window", "hann")
-    log_eps = float(chkpt.get("log_eps", 1e-3))
+    ckpt = torch.load(args.ckpt, map_location=device, weights_only=False)
+    mean = ckpt.get("mean")
+    std = ckpt.get("std")
+    phase_std = float(ckpt.get("phase_std"))
+    sound_size = ckpt.get("sound_size")
+    max_len = int(ckpt.get("max_len"))
+    n_fft = int(ckpt.get("n_fft", 512))
+    hop_size = int(ckpt.get("hop_size", 128))
+    window = ckpt.get("window", "hann")
+    log_eps = float(ckpt.get("log_eps", 1e-3))
 
     if sound_size is None or mean is None or std is None:
         raise ValueError("Checkpoint missing normalization stats or sound_size")
@@ -142,7 +142,7 @@ def main():
         max_xy = all_xy.max(axis=0)
 
     net, xyz_embedder, time_embedder, freq_embedder = build_model(cfg, min_xy, max_xy, device)
-    net.load_state_dict(chkpt["network"])
+    net.load_state_dict(ckpt["network"])
     net.eval()
 
     F = sound_size[1]

@@ -2,6 +2,7 @@ import argparse
 import math
 import os
 import socket
+import shutil
 from contextlib import closing
 from pathlib import Path
 from time import time
@@ -76,6 +77,13 @@ def build_model(cfg, dataset, device):
         + 2 * (2 * cfg["embed_freq_num_freqs"] + 1)
     )
 
+    if "xy_min" in cfg and "xy_max" in cfg:
+        min_xy = np.asarray(cfg["xy_min"], dtype=np.float32)
+        max_xy = np.asarray(cfg["xy_max"], dtype=np.float32)
+    else:
+        min_xy = dataset.min_pos
+        max_xy = dataset.max_pos
+
     net = kernel_residual_fc_embeds(
         input_ch=input_ch,
         dir_ch=cfg["dir_ch"],
@@ -89,8 +97,8 @@ def build_model(cfg, dataset, device):
         bandwidth_min=cfg["min_bandwidth"],
         bandwidth_max=cfg["max_bandwidth"],
         float_amt=cfg["position_float"],
-        min_xy=dataset.min_pos,
-        max_xy=dataset.max_pos,
+        min_xy=min_xy,
+        max_xy=max_xy,
         batch_norm=cfg["batch_norm"],
         batch_norm_features=cfg["pixel_count"],
         activation_func_name=cfg["activation_func_name"],
@@ -144,10 +152,10 @@ def train_worker(rank, world_size, freeport, cfg):
     exp_dir = cfg["output_dir"]
     loss_dir = os.path.join(exp_dir, "loss")
     val_dir = os.path.join(exp_dir, "val_results")
-    chkpt_dir = os.path.join(exp_dir, "chkpt")
+    ckpt_dir = os.path.join(exp_dir, "ckpt")
     os.makedirs(loss_dir, exist_ok=True)
     os.makedirs(val_dir, exist_ok=True)
-    os.makedirs(chkpt_dir, exist_ok=True)
+    os.makedirs(ckpt_dir, exist_ok=True)
 
     best_scores = []
 
@@ -378,7 +386,7 @@ def train_worker(rank, world_size, freeport, cfg):
 
             # checkpoints
             if epoch == 1 or epoch == cfg["epochs"]:
-                ckpt_path = os.path.join(chkpt_dir, f"epoch{epoch:04d}.chkpt")
+                ckpt_path = os.path.join(ckpt_dir, f"epoch{epoch:04d}.ckpt")
                 torch.save(
                     {
                         "network": ddp_net.module.state_dict(),
@@ -397,39 +405,50 @@ def train_worker(rank, world_size, freeport, cfg):
                     ckpt_path,
                 )
 
-            # keep top-k
-            best_scores.append((doa_err, epoch))
-            best_scores = sorted(best_scores, key=lambda x: x[0])[: cfg["save_best_k"]]
-            best_epochs = {ep for _, ep in best_scores}
-            if epoch in best_epochs:
-                ckpt_path = os.path.join(chkpt_dir, f"best_epoch{epoch:04d}.chkpt")
-                torch.save(
-                    {
-                        "network": ddp_net.module.state_dict(),
-                        "mean": dataset.mean.numpy(),
-                        "std": dataset.std.numpy(),
-                        "phase_std": dataset.phase_std,
-                        "max_len": dataset.max_len,
-                        "sound_size": dataset.sound_size,
-                        "n_fft": cfg["n_fft"],
-                        "hop_size": cfg["hop_size"],
-                        "window": cfg["window"],
-                        "log_eps": cfg["log_eps"],
-                        "model_type": cfg["model_type"],
-                        "dir_ch": cfg["dir_ch"],
-                    },
-                    ckpt_path,
-                )
-            # remove stale best checkpoints
-            for p in Path(chkpt_dir).glob("best_epoch*.chkpt"):
+            # keep top-k (rank-based checkpoint links/copies)
+            ckpt_path = os.path.join(ckpt_dir, f"eval{epoch:04d}.ckpt")
+            torch.save(
+                {
+                    "network": ddp_net.module.state_dict(),
+                    "mean": dataset.mean.numpy(),
+                    "std": dataset.std.numpy(),
+                    "phase_std": dataset.phase_std,
+                    "max_len": dataset.max_len,
+                    "sound_size": dataset.sound_size,
+                    "n_fft": cfg["n_fft"],
+                    "hop_size": cfg["hop_size"],
+                    "window": cfg["window"],
+                    "log_eps": cfg["log_eps"],
+                    "model_type": cfg["model_type"],
+                    "dir_ch": cfg["dir_ch"],
+                },
+                ckpt_path,
+            )
+
+            best_scores.append((doa_err, ckpt_path))
+            best_scores = sorted(best_scores, key=lambda x: x[0])
+            if len(best_scores) > cfg["save_best_k"]:
+                best_scores.pop(-1)
+
+            desired = set()
+            for rank, (_, src) in enumerate(best_scores, start=1):
+                dst = Path(ckpt_dir) / f"best{rank:04d}.ckpt"
+                desired.add(dst)
+                if dst.exists():
+                    dst.unlink()
                 try:
-                    ep = int(p.stem.split("epoch")[1])
-                except Exception:
-                    continue
-                if ep not in best_epochs:
+                    os.link(src, dst)
+                except OSError:
+                    shutil.copy2(src, dst)
+            for p in Path(ckpt_dir).glob("best*.ckpt"):
+                if p not in desired:
                     p.unlink()
 
         dist.barrier()
+
+    if rank == 0:
+        for p in Path(ckpt_dir).glob("eval*.ckpt"):
+            p.unlink()
 
     dist.destroy_process_group()
 
@@ -479,6 +498,8 @@ def run_training(config_path: str, data_dir: str, output_dir: str):
         "embed_time_max_freq": float(param.get("embed_time_max_freq", 10)),
         "embed_freq_num_freqs": int(param.get("embed_freq_num_freqs", 10)),
         "embed_freq_max_freq": float(param.get("embed_freq_max_freq", 10)),
+        "xy_min": param.get("xy_min"),
+        "xy_max": param.get("xy_max"),
         "doa_algorithm": str(doa_metric.get("algorithm", "NormMUSIC")),
         "fs": int(preprocess_cfg.get("fs", 16000)),
         "n_fft": int(preprocess_cfg.get("n_fft", 512)),
@@ -497,6 +518,8 @@ def run_training(config_path: str, data_dir: str, output_dir: str):
         reg_eps=cfg["reg_eps"],
         model_type=cfg["model_type"],
         dir_ch=cfg["dir_ch"],
+        xy_min=cfg.get("xy_min"),
+        xy_max=cfg.get("xy_max"),
     )
     cfg["dataset_cfg"] = dataset_cfg
 

@@ -125,7 +125,7 @@ NAF/
     ```
     python inference.py \
       --config config_files/inference_config.yml \
-      --chkpt train_output_dir/chkpt/best_epoch0001.chkpt \
+      --ckpt train_output_dir/ckpt/best_epoch0001.ckpt \
       --speaker config_files/speaker_data.json \
       --receiver config_files/receiver_data.json \
       --output_dir inference_output_dir
@@ -249,9 +249,9 @@ optuna_output_dir/
    ├─ <study_name>.db                Optuna study DB (SQLiteファイル)
    └─ trials/                        各試行結果
       ├─ trial0001/                    1回目のパラメータ探索結果
-      │  ├─ chkpt/                     モデルの重み
-      │  │  ├─ best0001.chkpt           評価指標が1番目に良いときの重み
-      │  │  ├─ best0002.chkpt           評価指標が2番目に良いときの重み
+      │  ├─ ckpt/                     モデルの重み
+      │  │  ├─ best0001.ckpt           評価指標が1番目に良いときの重み
+      │  │  ├─ best0002.ckpt           評価指標が2番目に良いときの重み
       │  │  └─ ...
       │  ├─ loss/                      損失
       │  │  ├─ epoch0001.npz            epoch 1 の結果
@@ -358,9 +358,9 @@ YAMLファイルで以下の内容を設定します。
 ```text
 train_output_dir/
 ├─ train_config.yml                  入力の設定ファイルのコピー
-├─ chkpt/                            モデルの重み
-│  ├─ best0001.chkpt                  評価指標が1番目に良いときの重み
-│  ├─ best0002.chkpt                  評価指標が2番目に良いときの重み
+├─ ckpt/                            モデルの重み
+│  ├─ best0001.ckpt                  評価指標が1番目に良いときの重み
+│  ├─ best0002.ckpt                  評価指標が2番目に良いときの重み
 │  └─ ...
 ├─ loss/                             損失
 │  ├─ epoch0001.npz                   epoch 1 の結果
