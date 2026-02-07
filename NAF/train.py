@@ -384,29 +384,8 @@ def train_worker(rank, world_size, freeport, cfg):
                 f"DoA_err={doa_err:.5f}, time={time()-start_time:.1f}s"
             )
 
-            # checkpoints
-            if epoch == 1 or epoch == cfg["epochs"]:
-                ckpt_path = os.path.join(ckpt_dir, f"epoch{epoch:04d}.ckpt")
-                torch.save(
-                    {
-                        "network": ddp_net.module.state_dict(),
-                        "mean": dataset.mean.numpy(),
-                        "std": dataset.std.numpy(),
-                        "phase_std": dataset.phase_std,
-                        "max_len": dataset.max_len,
-                        "sound_size": dataset.sound_size,
-                        "n_fft": cfg["n_fft"],
-                        "hop_size": cfg["hop_size"],
-                        "window": cfg["window"],
-                        "log_eps": cfg["log_eps"],
-                        "model_type": cfg["model_type"],
-                        "ch_num": cfg["ch_num"],
-                    },
-                    ckpt_path,
-                )
-
-            # keep top-k (rank-based checkpoint links/copies)
-            ckpt_path = os.path.join(ckpt_dir, f"eval{epoch:04d}.ckpt")
+            # Save candidate checkpoint, then reorder/move by score.
+            candidate_path = Path(ckpt_dir) / f"eval{epoch:04d}.ckpt"
             torch.save(
                 {
                     "network": ddp_net.module.state_dict(),
@@ -421,34 +400,35 @@ def train_worker(rank, world_size, freeport, cfg):
                     "log_eps": cfg["log_eps"],
                     "model_type": cfg["model_type"],
                     "ch_num": cfg["ch_num"],
+                    "epoch": epoch,
                 },
-                ckpt_path,
+                candidate_path,
             )
 
-            best_scores.append((doa_err, ckpt_path))
-            best_scores = sorted(best_scores, key=lambda x: x[0])
-            if len(best_scores) > cfg["save_best_k"]:
-                best_scores.pop(-1)
+            best_scores.append((doa_err, candidate_path))
+            best_scores = sorted(best_scores, key=lambda x: x[0])[: cfg["save_best_k"]]
 
-            desired = set()
-            for rank, (_, src) in enumerate(best_scores, start=1):
-                dst = Path(ckpt_dir) / f"best{rank:04d}.ckpt"
-                desired.add(dst)
-                if dst.exists():
-                    dst.unlink()
-                try:
-                    os.link(src, dst)
-                except OSError:
-                    shutil.copy2(src, dst)
-            for p in Path(ckpt_dir).glob("best*.ckpt"):
-                if p not in desired:
+            keep_eval = {p for _, p in best_scores}
+            for p in Path(ckpt_dir).glob("eval*.ckpt"):
+                if p not in keep_eval:
                     p.unlink()
 
-        dist.barrier()
+            for order_idx in range(len(best_scores), 0, -1):
+                _, src = best_scores[order_idx - 1]
+                final_path = Path(ckpt_dir) / f"best{order_idx:04d}.ckpt"
+                if src == final_path:
+                    continue
+                if final_path.exists():
+                    final_path.unlink()
+                if src.exists():
+                    src.rename(final_path)
 
-    if rank == 0:
-        for p in Path(ckpt_dir).glob("eval*.ckpt"):
-            p.unlink()
+            best_scores = [
+                (score, Path(ckpt_dir) / f"best{order_idx:04d}.ckpt")
+                for order_idx, (score, _) in enumerate(best_scores, start=1)
+            ]
+
+        dist.barrier()
 
     dist.destroy_process_group()
 

@@ -421,30 +421,32 @@ def run_training(cfg: dict, data_dir: str, output_dir: str) -> None:
                 )
 
                 best_scores.append((score, ckpt_path))
-                best_scores.sort(key=lambda x: x[0])
-                if len(best_scores) > save_best_k:
-                    best_scores.pop(-1)
-                # Rebuild top-k checkpoint links/copies each eval (replace per-rank)
-                desired = set()
-                for rank, (_, src) in enumerate(best_scores, start=1):
-                    dst = ckpt_dir / f"best{rank:04d}.tar"
-                    desired.add(dst)
-                    if dst.exists():
-                        dst.unlink()
-                    try:
-                        os.link(src, dst)
-                    except OSError:
-                        shutil.copy2(src, dst)
-                for p in ckpt_dir.glob("best*.tar"):
-                    if p not in desired:
+                best_scores = sorted(best_scores, key=lambda x: x[0])[:save_best_k]
+
+                keep_eval = {p for _, p in best_scores}
+                for p in ckpt_dir.glob("eval*.tar"):
+                    if p not in keep_eval:
                         p.unlink()
+
+                for order_idx in range(len(best_scores), 0, -1):
+                    _, src = best_scores[order_idx - 1]
+                    final_path = ckpt_dir / f"best{order_idx:04d}.tar"
+                    if src == final_path:
+                        continue
+                    if final_path.exists():
+                        final_path.unlink()
+                    if src.exists():
+                        src.rename(final_path)
+
+                best_scores = [
+                    (score, ckpt_dir / f"best{order_idx:04d}.tar")
+                    for order_idx, (score, _) in enumerate(best_scores, start=1)
+                ]
 
                 train_acc = {k: 0.0 for k in train_acc}
                 train_acc["count"] = 0
 
-    # Cleanup eval checkpoints after training
-    for p in ckpt_dir.glob("eval*.tar"):
-        p.unlink()
+    # eval checkpoints are cleaned during training
 
 
 def main():

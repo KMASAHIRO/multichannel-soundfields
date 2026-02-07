@@ -125,7 +125,7 @@ NAF/
     ```
     python inference.py \
       --config config_files/inference_config.yml \
-      --ckpt train_output_dir/ckpt/best_epoch0001.ckpt \
+      --ckpt train_output_dir/ckpt/best0001.ckpt \
       --speaker config_files/speaker_data.json \
       --receiver config_files/receiver_data.json \
       --output_dir inference_output_dir

@@ -174,7 +174,7 @@ def main():
                         tx_xy = tx[:2]
                         start_pos = torch.from_numpy(normalize_xy(tx_xy, min_xy, max_xy))[None]
                         end_pos = torch.from_numpy(normalize_xy(rx_xy, min_xy, max_xy))[None]
-                        total_position = torch.cat((start_pos, end_pos), dim=1).float().to(device)
+                        total_position = torch.cat((start_pos, end_pos), dim=1).unsqueeze(1).float().to(device)
                         total_non_norm = torch.cat(
                             (torch.from_numpy(tx_xy)[None], torch.from_numpy(rx_xy)[None]), dim=1
                         ).float().to(device)
@@ -217,7 +217,7 @@ def main():
                     tx_xy = tx[:2]
                     start_pos = torch.from_numpy(normalize_xy(tx_xy, min_xy, max_xy))[None]
                     end_pos = torch.from_numpy(normalize_xy(rx_xy, min_xy, max_xy))[None]
-                    total_position = torch.cat((start_pos, end_pos), dim=1).float().to(device)
+                    total_position = torch.cat((start_pos, end_pos), dim=1).unsqueeze(1).float().to(device)
                     total_non_norm = torch.cat(
                         (torch.from_numpy(tx_xy)[None], torch.from_numpy(rx_xy)[None]), dim=1
                     ).float().to(device)
