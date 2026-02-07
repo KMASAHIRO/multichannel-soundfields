@@ -39,7 +39,7 @@ metrics/
 
 ## 実行手順
 
-[`AVR`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR)または[`NAF`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF)で推論まで実行してから、以下のコードを実行してください。
+[`AVR`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#実行手順)または[`NAF`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#実行手順)で推論まで実行してから、以下のコードを実行してください。
 
 1. 依存関係のインストール
 
