@@ -67,6 +67,7 @@ AVR/
     ```
     pip install -r requirements.txt
 
+    # 例：CUDA 12.6 の場合
     module load cuda/12.6
     pip install git+https://github.com/NVlabs/tiny-cuda-nn@48d6989c95def307a40baf176b2d6015dada19f9#subdirectory=bindings/torch
     ```
