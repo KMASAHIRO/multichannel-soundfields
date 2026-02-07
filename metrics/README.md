@@ -49,19 +49,37 @@ pip install -r requirements.txt
 
 2. 推論結果の評価
 
-```
-python compute_metrics.py \
-  --config config_files/metrics_config.yml \
-  --input ../NAF/inference_output_dir/results.npz \
-  --output_dir metrics_output_dir
-```
+    a. AVRの場合 
+        
+        python compute_metrics.py \
+          --config config_files/metrics_config.yml \
+          --input ../AVR/inference_output_dir/results.npz \
+          --output_dir metrics_output_dir
+        
+   
+    b. NAFの場合
+   
+        python compute_metrics.py \
+          --config config_files/metrics_config.yml \
+          --input ../NAF/inference_output_dir/results.npz \
+          --output_dir metrics_output_dir
 
 3. ホワイトノイズ音源による推論結果の評価
 
-python compute_whitenoise_metrics.py \
-  --config config_files/whitenoise_metrics_config.yml \
-  --input ../NAF/inference_output_dir/results.npz \
-  --output_dir whitenoise_metrics_output_dir
+    a. AVRの場合 
+        
+        python compute_whitenoise_metrics.py \
+          --config config_files/whitenoise_metrics_config.yml \
+          --input ../AVR/inference_output_dir/results.npz \
+          --output_dir whitenoise_metrics_output_dir
+        
+   
+    b. NAFの場合
+   
+        python compute_whitenoise_metrics.py \
+          --config config_files/whitenoise_metrics_config.yml \
+          --input ../NAF/inference_output_dir/results.npz \
+          --output_dir whitenoise_metrics_output_dir
 
 ---
 
