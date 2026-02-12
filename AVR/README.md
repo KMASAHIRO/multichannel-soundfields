@@ -143,12 +143,14 @@ python optuna_tuning.py \
   --output_dir optuna_output_dir               # ハイパラチューニング結果出力先ディレクトリ
 ```
 
+最小化する目的関数は、検証データにおける `doa_pred_deg` と `doa_gt_deg` の角度誤差（循環差分）の平均値です。  
+
 ### ハイパラチューニング　入力
 
 | 入力 | 説明 |
 |---|---|
 | [ハイパラチューニング設定ファイル](#ハイパラチューニング設定ファイル) | ハイパラチューニングの条件 |
-| [データセットディレクトリ](#データセットディレクトリ) | 多チャンネルインパルス応答の波形 |
+| [データセットディレクトリ](#データセットディレクトリ) | 多チャンネルインパルス応答データセット |
 | [ハイパラチューニング結果出力先ディレクトリ](#ハイパラチューニング出力) | ハイパラチューニング結果の出力先 |
 
 #### データセットディレクトリ
@@ -171,8 +173,8 @@ dataset_dir/
 
 | key | dtype | shape | 内容 |
 |---|---|---|---|
-| ir | float32 | (ch_num, ir_len) | 多チャンネルインパルス応答 |
-| position_rx | float32 | (ch_num, 3) | 各チャンネルの受信機位置 [x, y, z] |
+| ir | float32 | (ch_num, ir_len) | 多チャンネルインパルス応答の波形 |
+| position_rx | float32 | (ch_num, 3) | 受信機の各チャンネルの位置 [x, y, z] |
 | position_tx | float32 | (3,) | 送信機位置 [x, y, z] |
 
 ここで、以下コマンドでダウンロードしたデータセットをそのまま使用可能です。各データセットの詳細は[Releases](https://github.com/KMASAHIRO/multichannel-soundfields/releases/tag/v0.1.0)を参照してください。また、[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)によるシミュレーションデータを使用することもできます。
@@ -294,6 +296,7 @@ optuna_output_dir/
 | energy_val | float32 | ()    | 検証データに対するエネルギー減衰特性の損失 |
 | multistft_val | float32 | ()    | 検証データに対する複数解像度STFTについての損失 |
 | das_val | float32 | ()    | 検証データに対する音源方向推定の損失（`model_type`が`AVR++`のときのみ） |
+| doa_err_val | float32 | ()    | 検証データに対する音源方向推定誤差（`doa_pred_deg` と `doa_gt_deg` の誤差の平均） |
 
 `val_results/`以下のnpzファイルの中身は以下のようになります。N_valは検証データのサンプル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。
 

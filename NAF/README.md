@@ -257,6 +257,8 @@ python optuna_tuning.py \
   --output_dir optuna_output_dir                    # ハイパラチューニング結果出力先ディレクトリ
 ```
 
+最小化する目的関数は、検証データにおける `doa_pred_deg` と `doa_gt_deg` の角度誤差（循環差分）の平均値です。  
+
 ### ハイパラチューニング　入力
 
 | 入力 | 説明 |
@@ -334,6 +336,7 @@ optuna_output_dir/
 | loss_val    | float32 | ()    | 検証データに対する損失                 |
 | mag_val     | float32 | ()    | 検証データに対する振幅の損失                     |
 | phase_val   | float32 | ()    | 検証データに対する位相の損失                   |
+| doa_err_val | float32 | ()    | 検証データに対する音源方向推定誤差（`doa_pred_deg` と `doa_gt_deg` の誤差の平均） |
 
 `val_results/`以下のnpzファイルの中身は以下のようになります。N_valは検証データのサンプル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。
 

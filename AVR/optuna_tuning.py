@@ -76,11 +76,11 @@ def load_best_doa(val_dir: Path, fallback: float) -> float:
         return fallback
     last = npzs[-1]
     data = np.load(last)
-    if "doa_pred_deg" not in data or "doa_true_deg" not in data:
+    if "doa_pred_deg" not in data or "doa_gt_deg" not in data:
         return fallback
     pred = data["doa_pred_deg"]
-    true = data["doa_true_deg"]
-    err = np.abs(pred - true)
+    gt = data["doa_gt_deg"]
+    err = np.abs(pred - gt)
     err = np.minimum(err, 360.0 - err)
     if np.isnan(err).any():
         return fallback

@@ -374,6 +374,7 @@ def train_worker(rank, world_size, freeport, cfg):
                 loss_val=np.float32(total_loss_val / max(val_iter, 1)),
                 mag_val=np.float32(total_mag_val / max(val_iter, 1)),
                 phase_val=np.float32(total_phase_val / max(val_iter, 1)),
+                doa_err_val=np.float32(doa_err),
                 doa_err=np.float32(doa_err),
             )
 

@@ -231,14 +231,14 @@ def run_validation(
     }
 
     fallback = float(doa_cfg.get("fallback_value", 999.0))
-    if doa_pred_deg is None:
+    if doa_pred_deg is None or doa_gt_deg is None:
         score = fallback
     else:
-        valid = ~np.isnan(doa_pred_deg)
+        valid = (~np.isnan(doa_pred_deg)) & (~np.isnan(doa_gt_deg))
         if not np.any(valid):
             score = fallback
         else:
-            err = angular_error_deg(doa_pred_deg[valid], doa_true_deg[valid])
+            err = angular_error_deg(doa_pred_deg[valid], doa_gt_deg[valid])
             if np.isnan(err).any():
                 score = fallback
             else:
@@ -400,6 +400,7 @@ def run_training(cfg: dict, data_dir: str, output_dir: str) -> None:
                     "time_val": np.float32(val_losses["time"]),
                     "energy_val": np.float32(val_losses["energy"]),
                     "multistft_val": np.float32(val_losses["multistft"]),
+                    "doa_err_val": np.float32(score),
                 }
                 if model_type == "AVR++":
                     loss_payload["das_train"] = np.float32(train_avg["das"])

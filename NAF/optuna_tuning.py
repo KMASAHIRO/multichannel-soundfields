@@ -68,8 +68,13 @@ def load_best_doa(val_dir: Path, fallback: float) -> float:
         return fallback
     pred = data["doa_pred_deg"]
     gt = data["doa_gt_deg"]
-    err = np.abs(pred - gt)
+    valid = (~np.isnan(pred)) & (~np.isnan(gt))
+    if not np.any(valid):
+        return fallback
+    err = np.abs(pred[valid] - gt[valid])
     err = np.minimum(err, 360.0 - err)
+    if np.isnan(err).any():
+        return fallback
     return float(np.mean(err))
 
 
