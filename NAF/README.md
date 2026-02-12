@@ -250,14 +250,14 @@ preprocessed_data_dir/
 
 ### ハイパラチューニング
 
+検証データにおける `doa_pred_deg`（推論結果波形から推定した音源方向） と `doa_gt_deg`（正解データ波形から推定した音源方向） の誤差の平均を最小化します。  
+
 ```
 python optuna_tuning.py \
   --config config_files/optuna_config.yml \         # ハイパラチューニング設定ファイル
   --data_dir preprocessed_data_dir \                # 前処理結果出力先ディレクトリ
   --output_dir optuna_output_dir                    # ハイパラチューニング結果出力先ディレクトリ
 ```
-
-最小化する目的関数は、検証データにおける `doa_pred_deg` と `doa_gt_deg` の角度誤差（循環差分）の平均値です。  
 
 ### ハイパラチューニング　入力
 
