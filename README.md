@@ -25,14 +25,13 @@ multichannel-soundfields/
 ## データセット
 
 実データのダウンロードと整形は[`real_data`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/real_data)にまとめています。  
-シミュレーションデータは[`AcoustiX`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX)（レイトレーシング）と[`Pyroomacoustics`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics)（鏡像法）で作成します。  
-どちらも、AVR/NAFが読み込む共通の`dataset_dir/tx_*/rx_*.npz`形式で出力します。
+シミュレーションデータは[`AcoustiX`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX)（レイトレーシング）と[`Pyroomacoustics`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics)（鏡像法）で作成します。
 
 ## ニューラルネットワークを用いた音場推定手法
 
 多チャンネル音場推定の手法として、[`AVR`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR)と[`NAF`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF)を用意しています。  
-AVRは、AVRに多チャンネル埋め込みを加えたAVR+、さらに音源方向推定誤差を損失に追加したAVR++を実装しています。  
-NAFは、NAFに多チャンネル埋め込みを加えたNAF+を実装しています。
+[`AVR`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR)では、AVRに多チャンネル埋め込みを加えたAVR+、さらに音源方向推定誤差を損失に追加したAVR++を実装しています。  
+[`NAF`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF)では、NAFに多チャンネル埋め込みを加えたNAF+を実装しています。
 
 ---
 
