@@ -111,7 +111,7 @@ python compute_metrics.py \
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 受信機位置 [x, y, z] or [x, y] |
 | ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |
 | ir_gt       | float32   | (N_inf, ch_num, ir_len) | 正解データの時間波形  |
 
@@ -145,7 +145,7 @@ metrics_output_dir/
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 受信機位置 [x, y, z] or [x, y] |
 | ir_gt        | float32   | (N_inf, ch_num, ir_len) | 正解データの時間波形  |
 | ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_inf,)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
@@ -208,7 +208,7 @@ whitenoise_metrics_output_dir/
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 受信機位置 [x, y, z] or [x, y] |
 | ir_gt        | float32   | (N_inf, ch_num, ir_len) | 正解データの時間波形  |
 | ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_inf, N_timeframe)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |

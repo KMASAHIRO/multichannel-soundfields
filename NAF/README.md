@@ -177,7 +177,7 @@ dataset_dir/
 | key | dtype | shape | 内容 |
 |---|---|---|---|
 | ir | float32 | (ch_num, ir_len) | 多チャンネルインパルス応答 |
-| position_rx | float32 | (ch_num, 3) or (ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (ch_num, 3) or (ch_num, 2) | 受信機位置 [x, y, z] or [x, y] |
 | position_tx | float32 | (3,) or (2,) | 送信機位置 [x, y, z] or [x, y] |
 
 ここで、以下コマンドでダウンロードしたデータセットをそのまま使用可能です。各データセットの詳細は[Releases](https://github.com/KMASAHIRO/multichannel-soundfields/releases/tag/v0.1.0)を参照してください。また、[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)によるシミュレーションデータを使用することもできます。
@@ -241,7 +241,7 @@ NAFのモデルタイプにおける`NAF+`は、`NAF`を多チャンネルデー
 preprocessed_data_dir/
 ├ preprocess_config.yml         入力の設定ファイルのコピー
 ├ train_val_split.pkl           学習データと検証データの分割
-├ positions.h5                  送信機・受信機の位置
+├ positions.h5                  送信機位置・受信機位置
 ├ magnitudes.h5                 振幅
 └ phases.h5                     位相
 ```
@@ -343,7 +343,7 @@ optuna_output_dir/
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_val, 3) or (N_val, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_val, ch_num, 3) or (N_val, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_val, ch_num, 3) or (N_val, ch_num, 2) | 受信機位置 [x, y, z] or [x, y] |
 | ir_gt        | float32   | (N_val, ch_num, ir_len) | 正解データの時間波形  |
 | ir_pred       | float32   | (N_val, ch_num, ir_len) | 推論結果の時間波形  |
 | doa_true_deg   | float32 | (N_val,)  | 物理的な音源方向（`position_tx` - `position_rx` から算出する角度） [°]     |
@@ -508,7 +508,7 @@ YAMLファイルで以下の内容を設定します。
 
 #### 受信機データファイル
 
-受信機の位置を定義したJSONファイルを用意します。  
+受信機位置を定義したJSONファイルを用意します。  
 `N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はch_numチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
 
 | key | 型 | shape | 内容 |
@@ -536,5 +536,5 @@ inference_output_dir/
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
 | position_tx | float32 | (N_inf, 3) or (N_inf, 2) | 送信機位置 [x, y, z] or [x, y] |
-| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
+| position_rx | float32 | (N_inf, ch_num, 3) or (N_inf, ch_num, 2) | 受信機位置 [x, y, z] or [x, y] |
 | ir_pred       | float32   | (N_inf, ch_num, ir_len) | 推論結果の時間波形  |

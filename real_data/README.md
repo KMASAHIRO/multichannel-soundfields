@@ -87,5 +87,5 @@ dataset_dir/
 | key | dtype | shape | 内容 |
 |---|---|---|---|
 | ir | float32 | (8, 1600) | 8チャンネルのインパルス応答の波形 |
-| position_rx | float32 | (8, 3) | 各チャンネルの受信機位置 [x, y, z] |
+| position_rx | float32 | (8, 3) | 受信機位置 [x, y, z] |
 | position_tx | float32 | (3,) | 送信機位置 [x, y, z] |
