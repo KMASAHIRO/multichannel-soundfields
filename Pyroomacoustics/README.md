@@ -61,6 +61,16 @@ python simulation.py \
 
 ## 入出力
 
+### シミュレーション
+
+```
+python simulation.py \
+  --config simu_input/config.yml \            # シミュレーション設定ファイル
+  --speaker simu_input/speaker_data.json \    # 送信機データファイル
+  --receiver simu_input/receiver_data.json \  # 受信機データファイル
+  --output_dir outputs                        # 出力先ディレクトリ
+```
+
 ### 入力
 
 以下の入力を使ってシミュレーションを実行します。すべての入力が必要です。
@@ -85,7 +95,7 @@ YAMLファイルで以下の内容を設定します。
 | max_order | 10 | 鏡像法（Image Source Method）における最大反射回数（反射次数） |
 | e_absorption | 0.0055 | 壁面の吸音率 |
 | sampling_rate | 16000 | サンプリング周波数 [Hz] |
-| ir_len | 1600 | 保存するインパルス応答長（サンプル数） |
+| ir_len | 1600 | インパルス応答の時間方向のサンプル数（波形の長さ） |
 
 ---
 
@@ -98,7 +108,7 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|---|
 | positions | list | (N_tx, 3) | 送信機位置 [x, y, z] |
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上の橙点に配置されたスピーカーに対応するファイルは、[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/simu_input/speaker_data.json)を参照してください。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/simu_input/speaker_data.json)は、下図のようなグリッド上の橙点にスピーカーを配置したデータです。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
@@ -114,7 +124,7 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|---|
 | positions | list | (N_rx, ch_num, 3) | 受信機位置 [x, y, z] |
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/simu_input/receiver_data.json)を参照してください。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics/simu_input/receiver_data.json)は、下図のようなグリッド上に配置した8ch円形マイクロフォンアレイのデータです。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
@@ -123,6 +133,8 @@ YAMLファイルで以下の内容を設定します。
 ### 出力
 
 入力時に指定した出力先ディレクトリ`output_dir`に、以下の構成で出力します。
+
+#### データセットディレクトリ
 
 ```text
 output_dir/
@@ -138,6 +150,8 @@ output_dir/
 │  ├ ...
 ├ ...
 ```
+
+この`output_dir`は、[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#データセットディレクトリ)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#データセットディレクトリ)の`dataset_dir`としてそのまま利用できます。
 
 シミュレーション条件を保存するため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。
 各npzファイルの内容は以下のようになります。

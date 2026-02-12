@@ -85,6 +85,15 @@ pip install -r requirements.txt
 
 ## 入出力
 
+### 推論結果の評価
+
+```
+python compute_metrics.py \
+  --config config_files/metrics_config.yml \         # 評価設定ファイル
+  --input ../AVR/inference_output_dir/results.npz \  # 推論結果
+  --output_dir metrics_output_dir                    # 出力先ディレクトリ
+```
+
 ### 推論結果の評価　入力
 
 | 入力 | 説明 |
@@ -96,7 +105,8 @@ pip install -r requirements.txt
 
 #### 推論結果
 
-[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#推論出力)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#推論出力)の推論結果と正解データの時間波形`ir_gt`を含む`results.npz`を用意します。形式は以下の通りです。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。なお、`ir_gt`が含まれていない場合、推論結果波形を用いた音源方向の推定のみ実行されます。
+[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#推論出力)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#推論出力)の`results.npz`を用意します。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。  
+`ir_gt`が含まれていない場合は、推論結果波形を用いた音源方向推定のみ実行されます。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
@@ -130,7 +140,7 @@ metrics_output_dir/
 └─ metrics_results.npz                 評価結果
 ```
 
-`metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
+`metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
@@ -149,6 +159,15 @@ metrics_output_dir/
 | metric_edt_ms  | float32 | (N_inf, ch_num) | 初期残響時間EDTの誤差 [ms]      |
 
 ---
+
+### ホワイトノイズ音源による推論結果の評価
+
+```
+python compute_whitenoise_metrics.py \
+  --config config_files/whitenoise_metrics_config.yml \  # ホワイトノイズ音源による評価設定ファイル
+  --input ../AVR/inference_output_dir/results.npz \      # 推論結果
+  --output_dir whitenoise_metrics_output_dir             # 出力先ディレクトリ
+```
 
 ### ホワイトノイズ音源による推論結果の評価　入力
 
@@ -184,7 +203,7 @@ whitenoise_metrics_output_dir/
 └─ whitenoise_metrics_results.npz                 評価結果
 ```
 
-`whitenoise_metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さ、N_timeframeはインパルス応答とホワイトノイズ畳み込み後の時間方向の分割数です。
+`whitenoise_metrics_results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）、N_timeframeはインパルス応答とホワイトノイズ畳み込み後の時間方向の分割数です。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |

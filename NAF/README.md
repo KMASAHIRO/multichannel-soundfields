@@ -2,8 +2,8 @@
 
 NAFを用いた多チャンネル音場推定  
 
-[NAF](https://github.com/aluo-x/Learning_Neural_Acoustic_Fields)をベースとして、多チャンネル音場への拡張を行いました。  
-NAFに加え、チャンネル番号に対応する埋め込みベクトルを入力するNAF+を実装しています。
+[NAF](https://github.com/aluo-x/Learning_Neural_Acoustic_Fields)をベースに、多チャンネル音場へ拡張しました。  
+NAFに加え、チャンネル埋め込みを入力するNAF+を実装しています。
 
 ---
 
@@ -135,6 +135,19 @@ NAF/
 
 ## 入出力
 
+### 前処理
+
+```
+python preprocess/split_train_val.py \
+  --dataset_dir dataset_dir \                       # データセットディレクトリ
+  --output_dir preprocessed_data_dir                # 前処理結果出力先ディレクトリ
+
+python preprocess/preprocess.py \
+  --config config_files/preprocess_config.yml \     # 前処理設定ファイル
+  --dataset_dir dataset_dir \                       # データセットディレクトリ
+  --output_dir preprocessed_data_dir                # 前処理結果出力先ディレクトリ
+```
+
 ### 前処理　入力
 
 | 入力 | 説明 |
@@ -146,7 +159,6 @@ NAF/
 #### データセットディレクトリ
 
 `dataset_dir`に、以下のディレクトリ構成で多チャンネルインパルス応答の波形データを用意します。  
-[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/real_data#出力)及び[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)によるシミュレーションデータを使う場合は、各「出力先ディレクトリ」をそのまま使用してください。
 
 ```text
 dataset_dir/
@@ -160,13 +172,49 @@ dataset_dir/
 ├ ...
 ```
 
-各`rx_*.npz`の内容は以下の通りです。ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenは時間波形の長さです。
+各`rx_*.npz`の内容は以下の通りです。ch_numは受信機（マイクロフォンアレイ）のチャンネル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。
 
 | key | dtype | shape | 内容 |
 |---|---|---|---|
 | ir | float32 | (ch_num, ir_len) | 多チャンネルインパルス応答 |
 | position_rx | float32 | (ch_num, 3) or (ch_num, 2) | 各チャンネルの受信機位置 [x, y, z] or [x, y] |
 | position_tx | float32 | (3,) or (2,) | 送信機位置 [x, y, z] or [x, y] |
+
+ここで、以下コマンドでダウンロードしたデータセットをそのまま使用可能です。各データセットの詳細は[Releases](https://github.com/KMASAHIRO/multichannel-soundfields/releases/tag/v0.1.0)を参照してください。また、[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)や[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)によるシミュレーションデータを使用することもできます。
+
+- 実データ
+
+    ``` 
+    curl -L -o real_wav_data.zip \
+      https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/real_wav_data.zip
+
+    unzip real_wav_data.zip
+
+    python ../real_data/data_formatting.py \
+      --data_dir real_wav_data \
+      --output_dir dataset_dir
+    ```    
+
+- シミュレーションデータ（AcoustiX）
+
+    ```
+    curl -L -o AcoustiX_data.zip \
+      https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/AcoustiX_data.zip
+
+    unzip AcoustiX_data.zip
+    mv AcoustiX_data dataset_dir
+    ```
+
+- シミュレーションデータ（Pyroomacoustics）
+
+    ```
+    curl -L -o Pyroomacoustics_data.zip \
+      https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/Pyroomacoustics_data.zip
+
+    unzip Pyroomacoustics_data.zip
+    mv Pyroomacoustics_data dataset_dir
+    ```
+
 
 #### 前処理設定ファイル
 
@@ -199,6 +247,15 @@ preprocessed_data_dir/
 ```
 
 ---
+
+### ハイパラチューニング
+
+```
+python optuna_tuning.py \
+  --config config_files/optuna_config.yml \         # ハイパラチューニング設定ファイル
+  --data_dir preprocessed_data_dir \                # 前処理結果出力先ディレクトリ
+  --output_dir optuna_output_dir                    # ハイパラチューニング結果出力先ディレクトリ
+```
 
 ### ハイパラチューニング　入力
 
@@ -278,7 +335,7 @@ optuna_output_dir/
 | mag_val     | float32 | ()    | 検証データに対する振幅の損失                     |
 | phase_val   | float32 | ()    | 検証データに対する位相の損失                   |
 
-`val_results/`以下のnpzファイルの中身は以下のようになります。N_valは検証データのサンプル数、ir_lenは時間波形の長さです。
+`val_results/`以下のnpzファイルの中身は以下のようになります。N_valは検証データのサンプル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |
@@ -297,6 +354,15 @@ optuna_output_dir/
 | metric_edt_ms  | float32 | (N_val, ch_num) | 初期残響時間EDTの誤差 [ms]      |
 
 ---
+
+### 学習
+
+```
+python train.py \
+  --config config_files/train_config.yml \          # 学習設定ファイル
+  --data_dir preprocessed_data_dir \                # 前処理結果出力先ディレクトリ
+  --output_dir train_output_dir                     # 学習結果出力先ディレクトリ
+```
 
 ### 学習　入力
 
@@ -372,8 +438,18 @@ train_output_dir/
    └─ ...
 ```
 
-
 ---
+
+### 推論
+
+```
+python inference.py \
+  --config config_files/inference_config.yml \      # 推論設定ファイル
+  --ckpt train_output_dir/ckpt/best0001.ckpt \      # 学習済みモデルの重み
+  --speaker config_files/speaker_data.json \        # 送信機データファイル
+  --receiver config_files/receiver_data.json \      # 受信機データファイル
+  --output_dir inference_output_dir                 # 推論結果出力先ディレクトリ
+```
 
 ### 推論　入力
 
@@ -423,6 +499,10 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|---|
 | positions | list | (N_tx, 3) | 送信機位置 [x, y, z] |
 
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/speaker_data.json)は、下図のようなグリッド上の橙点にスピーカーを配置したデータです。
+
+<img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
+
 #### 受信機データファイル
 
 受信機の位置を定義したJSONファイルを用意します。  
@@ -431,6 +511,10 @@ YAMLファイルで以下の内容を設定します。
 | key | 型 | shape | 内容 |
 |---|---|---|---|
 | positions | list | (N_rx, ch_num, 3) | 受信機位置 [x, y, z] |
+
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/receiver_data.json)は、下図のようなグリッド上に配置した8ch円形マイクロフォンアレイのデータです。
+
+<img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
 ---
 
@@ -444,7 +528,7 @@ inference_output_dir/
 └─ results.npz                           推論結果
 ```
 
-`results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ir_lenは時間波形の長さです。
+`results.npz`の中身は以下のようになります。N_infは推論データのサンプル数、ir_lenはインパルス応答の時間方向のサンプル数（波形の長さ）です。
 
 | key           | dtype     | shape             | 内容                  |
 | ------------- | --------- | ----------------- | ------------------- |

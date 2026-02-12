@@ -2,9 +2,8 @@
 
 AcoustiXを用いた多チャンネル音響シミュレーション  
 
-[AcoustiX](https://github.com/penn-waves-lab/AcoustiX)をベースとして、軽微なバグの修正及び多チャンネル音響シミュレーションコードの追加を行いました。  
-
-AcoutiXは、NVIDIAの電波用レイトレーシングシミュレータ [Sionna ray tracing (Sionna RT)](https://github.com/NVlabs/sionna)を音響用に拡張したシミュレータです。
+[AcoustiX](https://github.com/penn-waves-lab/AcoustiX)をベースに、軽微なバグ修正と多チャンネル音響シミュレーション機能を追加しました。  
+AcoustiXは、NVIDIAの電波用レイトレーシングシミュレータ[Sionna ray tracing (Sionna RT)](https://github.com/NVlabs/sionna)を音響向けに拡張したものです。
 
 ---
 
@@ -84,6 +83,17 @@ python simulation.py \
 
 ## 入出力
 
+### シミュレーション
+
+```
+python simulation.py \
+  --config simu_input/config.yml \                     # シミュレーション設定ファイル
+  --scene simu_input/AcoustiX_room/AcoustiX_room.xml \ # シーンファイル
+  --speaker simu_input/speaker_data.json \             # 送信機データファイル
+  --receiver simu_input/receiver_data.json \           # 受信機データファイル
+  --output_dir outputs                                 # 出力先ディレクトリ
+```
+
 ### 入力
 
 以下の入力を使ってシミュレーションを実行します。すべての入力が必要です。
@@ -114,7 +124,7 @@ YAMLファイルで以下の内容を設定します。
 | scat_prob | 0.00001 | 音線が散乱する確率 |
 | attn | 0.001 | 減衰係数 |
 | fs | 16000 | サンプリング周波数 [Hz] |
-| ir_len | 1600 | インパルス応答長（サンプル数） |
+| ir_len | 1600 | インパルス応答の時間方向のサンプル数（波形の長さ） |
 | speed | 343.8 | 音速 [m/s] |
 | noise | 0.0 | 波形に加えるノイズの大きさ |
 
@@ -122,11 +132,11 @@ YAMLファイルで以下の内容を設定します。
 
 #### シーンファイル
 
-シミュレーション環境（シーン）を表すXMLファイル、plyファイルをBlenderで作成する必要があります。
+シーンはXMLとPLYで構成します。Blenderで作成し、Mitsuba形式でエクスポートします。
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体のシーンファイルは、[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。  
-Drive内のデータをすべてダウンロードし、そのままのディレクトリ構成でシミュレーション実行環境に配置してください。  
-シーンを自作したい場合は[シーンを自作する場合](#シーンを自作する場合)を参照してください。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体シーンは[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。  
+Drive内のフォルダ構成を保ったまま配置してください。  
+自作する場合は[シーンを自作する場合](#シーンを自作する場合)を参照してください。
 
 <img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
 
@@ -135,8 +145,8 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 #### 送信機データファイル
 
 送信機（スピーカー）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
-指向性パターン`patterns`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
-`N_tx`は送信機配置パターンの総数です。各シミュレーションでは送信機は1台のみ配置します。
+指向性パターン`patterns`を`uniform`にすると向きの影響は無視されます。  
+`N_tx`は送信機配置パターンの総数で、各シミュレーションでは送信機は1台のみ配置します。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
@@ -144,7 +154,7 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 | orientations | list | (N_tx, 3) | 送信機の向き [x, y, z] |
 | patterns | list | (N_tx,) | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上の橙点に配置されたスピーカーに対応するファイルは、[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/speaker_data.json)を参照してください。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した[`speaker_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/speaker_data.json)は、下図のようなグリッド上の橙点にスピーカーを配置したデータです。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
@@ -154,8 +164,8 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 #### 受信機データファイル
 
 受信機（マイクロフォンアレイ）の位置、向き、指向性パターンを定義したJSONファイルを用意します。  
-指向性パターン`patterns`を`uniform`（指向性なし）にした場合は、向きによる影響はありません。  
-`N_rx`は受信機（マイクロフォンアレイ）の配置数を表し、各受信機はch_numチャンネルで構成されます。ただし、アレイの中心と送信機位置が重なる受信機は除外してシミュレーションを行います。
+指向性パターン`patterns`を`uniform`にすると向きの影響は無視されます。  
+`N_rx`は受信機配置数で、各受信機はch_numチャンネルで構成されます。アレイ中心と送信機位置が重なる受信機は除外します。
 
 | key | 型 | shape | 内容 |
 |---|---|---|---|
@@ -163,7 +173,7 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 | orientations | list | (N_rx, ch_num, 3) | 受信機の向き [x, y, z] |
 | patterns | list | (N_rx, ch_num) | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイに対応するファイルは、[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)を参照してください。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した[`receiver_data.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/simu_input/receiver_data.json)は、下図のようなグリッド上に配置した8ch円形マイクロフォンアレイのデータです。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
@@ -172,6 +182,8 @@ Drive内のデータをすべてダウンロードし、そのままのディレ
 ### 出力
 
 入力時に指定した出力先ディレクトリ`output_dir`に、以下の構成で出力します。
+
+#### データセットディレクトリ
 
 ```text
 output_dir/
@@ -188,7 +200,9 @@ output_dir/
 ├ ...
 ```
 
-シミュレーション条件を保存するため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。
+この`output_dir`は、[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#データセットディレクトリ)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#データセットディレクトリ)の`dataset_dir`としてそのまま利用できます。
+
+シミュレーション条件を保存するため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。  
 各npzファイルの内容は以下のようになります。
 
 | key            | dtype   | shape | 内容                 |
@@ -209,55 +223,51 @@ output_dir/
 
 ### 1. 必要なソフトウェアのインストール
 
-シーンファイルを自作するには、Blender及びMitsuba-Blenderアドオンが必要です。それぞれ以下のバージョンを使用することを推奨します。
+シーンファイルを自作するには、Blender及びMitsuba-Blenderアドオンが必要です。推奨バージョンは以下の通りです。
 
 - Blender 3.6.0  
   https://download.blender.org/release/Blender3.6/
 - Mitsuba-Blender v0.3.0  
   https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0
 
-まず、[Blender 3.6のダウンロードページ](https://download.blender.org/release/Blender3.6/)から自身の環境（OS/CPUアーキテクチャ）に応じてBlender 3.6.0 をダウンロードし、インストールを完了してください。  
-次に、[Mitsuba-Blender v0.3.0](https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0)のAssetsにある`mitsuba-blender.zip`をダウンロードし、[インストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)に従って、Mitsuba-Blenderアドオンのインストールをしてください。
+まず、[Blender 3.6のダウンロードページ](https://download.blender.org/release/Blender3.6/)から自身の環境（OS/CPUアーキテクチャ）に応じてBlender 3.6.0をダウンロードし、インストールします。  
+次に、[Mitsuba-Blender v0.3.0](https://github.com/mitsuba-renderer/mitsuba-blender/releases/tag/v0.3.0)のAssetsにある`mitsuba-blender.zip`をダウンロードし、[インストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)に従ってMitsuba-Blenderアドオンを導入します。
 
 ### 2. 3Dオブジェクトの作成
 
-ここでは、`6.11×8.807×2.7 [m]`の直方体のオブジェクトを作成することとします。
-Blenderを立ち上げ、デフォルトで1辺2mの立方体とカメラ、ライトが用意されていることを確認します。  
+ここでは、`6.11×8.807×2.7 [m]`の直方体を作成する例を示します。  
+Blenderを起動し、デフォルトで1辺2mの立方体とカメラ、ライトがあることを確認します。
 
 <img width="1919" height="1093" alt="1_start_menu" src="https://github.com/user-attachments/assets/5aa6f87b-5f45-4329-9ab8-8a768a205cb8" />
 
-画面右上の`Scene Collection`から`Camera`と`Light`を選択し、キーボードのDeleteボタンで削除します。  
-次に、画面中央の立方体をクリックし、キーボードのNキーを押します。サイドバーが現れるので、`Transform`→`Dimensions`の`X`、`Y`、`Z`をそれぞれ`6.11 m`、`8.807 m`、`2.7 m`に設定し、`Location`の`X`、`Y`、`Z`をそれぞれ`6.11/2 m`、`8.807/2 m`、`2.7/2 m`と入力します（下画像の赤枠参照）。すると、角の位置が座標上の原点となるような直方体ができます。
-
 <img width="1919" height="1092" alt="2_change_room_dim" src="https://github.com/user-attachments/assets/7890ff47-35d8-4e5f-adde-40ee2319f7f5" />
 
-
-このように、仮定するシミュレーション状況に合わせて自由に3Dオブジェクトを作成してください。複数のオブジェクトを作成しても問題ありません。
-
+画面右上の`Scene Collection`から`Camera`と`Light`を選択し、`Delete`キーで削除します。  
+次に、画面中央の立方体を選択して`N`キーを押し、サイドバーの`Transform`を開きます。`Dimensions`の`X`、`Y`、`Z`をそれぞれ`6.11 m`、`8.807 m`、`2.7 m`に設定し、`Location`の`X`、`Y`、`Z`をそれぞれ`6.11/2 m`、`8.807/2 m`、`2.7/2 m`に設定します。これで角の位置が座標上の原点となるような直方体になります。  
+用途に合わせて複数オブジェクトを作成しても問題ありません。
 
 ### 3. 材料の設定
 
-3Dオブジェクトの各面に使用する材料を設定します。材料は[`acoustic_absorptions.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/acoustic_absorptions.json)のキーから選択してください。このjsonファイルは、各材料の周波数ごとの吸音率を定義しています。  
-
-
-例えば、直方体の各面に`Smooth concrete, painted or glazed`を使用する場合は、Blenderで直方体を選択した状態で右下パネルの`Material Properties`を開き、名前を`Smooth concrete, painted or glazed`とします。画像内右下で赤枠に囲まれたピンク色の円形マークが`Material Properties`であり、画像右側中央で赤枠に囲まれたテキストボックス部分に名前を入力します。
+3Dオブジェクトの各面に使用する材料を設定します。材料名は[`acoustic_absorptions.json`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX/acoustic_absorptions.json)のキーから選択してください。このjsonファイルは、各材料の周波数ごとの吸音率を定義しています。  
+例えば、直方体の各面に`Smooth concrete, painted or glazed`を使う場合は、直方体を選択した状態で右下パネルの`Material Properties`を開き、同じ名前を入力します。
 
 <img width="1919" height="1092" alt="3_set_mat_param" src="https://github.com/user-attachments/assets/d9844dff-b9ee-4d16-9afb-706fc4385a2c" />
 
 ### 4. Mitsuba形式でのシーンのエクスポート
 
-Blender画面左上の`File`→`Export`→`Mitsuba (.xml)`を選択します。ここで、`Mitsuba (.xml)`が表示されない場合は、[Mitsuba-Blenderアドオンのインストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)をもう一度参照してください。
+Blender画面左上の`File`→`Export`→`Mitsuba (.xml)`を選択します。  
+`Mitsuba (.xml)`が表示されない場合は、[Mitsuba-Blenderアドオンのインストールガイド](https://github.com/mitsuba-renderer/mitsuba-blender/wiki/Installation-&-Update-Guide)を再確認してください。
 
 <img width="1919" height="1090" alt="4_mitsuba_export_button" src="https://github.com/user-attachments/assets/b33ad8f1-9031-4d23-ace0-f50679bae5ba" />
 
-
-`Export IDs`、`Ignore Default Background`にチェックが入っていること、`Y Forward`、`Z Up`となっていることを確認し、適当な名前を付けて保存します（ここでは、AcoustiX_room.xml）。
+`Export IDs`と`Ignore Default Background`を有効にし、`Y Forward`、`Z Up`を確認して保存します（例：`AcoustiX_room.xml`）。
 
 <img width="1232" height="812" alt="5_export_settings" src="https://github.com/user-attachments/assets/22ef1b24-98f1-40fd-8a2f-b934c2dc2bb3" />
 
 ### 5. 出力ファイルの確認
 
-エクスポート時に名前を付けたxmlファイルの他に、同階層のmeshesディレクトリ以下にplyファイルが存在することを確認します。シミュレーション時にAcoustiXに入力するのはxmlファイルのパスだけですが、内部的にplyファイルも使用するので、ファイルを移動する場合はディレクトリ構成を崩さずにまとめて移動してください。
+エクスポートしたxmlファイルに加えて、同階層の`meshes/`配下にplyファイルがあることを確認してください。  
+シミュレーション実行時はxmlのパスを指定しますが、内部的にplyファイルも参照するため、移動時はディレクトリ構成を保ってください。
 
 ---
 

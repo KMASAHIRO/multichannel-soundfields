@@ -1,8 +1,9 @@
-# AVR
+# real_data
 
 実データのダウンロード、整形
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイによる測定から求めたインパルス応答を記録しています。各測定ではスピーカーを1つだけ使用し、グリッド上のその他の点にマイクロフォンアレイを配置して記録しています。
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイの測定データを整形します。  
+各測定ではスピーカーを1台のみ使用し、グリッド上の他の点にマイクロフォンアレイを配置して計測しています。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
@@ -23,7 +24,7 @@
 ## リポジトリ構成
 
 ```text
-NAF/
+real_data/
 ├ README.md                     ドキュメント
 ├ requirements.txt              依存関係
 └ data_formatting.py            データ整形
@@ -60,14 +61,33 @@ unzip real_wav_data.zip
 ```
 python data_formatting.py \
   --data_dir real_wav_data \
-  --output_dir real_data
+  --output_dir dataset_dir
 ```
 
 ---
 
-## 出力
+## 入出力
 
-`real_data`に、以下のディレクトリ構成で8チャンネルのインパルス応答の波形データが出力されます。
+### データ整形
+
+```
+python data_formatting.py \
+  --data_dir real_wav_data \  # 入力データディレクトリ
+  --output_dir dataset_dir    # データセットディレクトリ
+```
+
+### データ整形　入力
+
+| 入力 | 説明 |
+|---|---|
+| 入力データディレクトリ (`real_wav_data`) | ダウンロードした実測波形データ |
+| [データセットディレクトリ](#データセットディレクトリ) | 整形済みデータの出力先 |
+
+### データ整形　出力
+
+#### データセットディレクトリ
+
+`dataset_dir`に、以下のディレクトリ構成で8チャンネルのインパルス応答の波形データが出力されます。
 
 ```text
 dataset_dir/
