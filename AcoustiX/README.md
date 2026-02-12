@@ -76,7 +76,7 @@ python simulation.py \
   --scene simu_input/AcoustiX_room/AcoustiX_room.xml \
   --speaker simu_input/speaker_data.json \
   --receiver simu_input/receiver_data.json \
-  --output_dir outputs
+  --output_dir output_dir
 ```
 
 ---
@@ -91,7 +91,7 @@ python simulation.py \
   --scene simu_input/AcoustiX_room/AcoustiX_room.xml \ # シーンファイル
   --speaker simu_input/speaker_data.json \             # 送信機データファイル
   --receiver simu_input/receiver_data.json \           # 受信機データファイル
-  --output_dir outputs                                 # 出力先ディレクトリ
+  --output_dir output_dir                              # 出力先ディレクトリ
 ```
 
 ### 入力
@@ -183,8 +183,6 @@ Drive内のフォルダ構成を保ったまま配置してください。
 
 入力時に指定した出力先ディレクトリ`output_dir`に、以下の構成で出力します。
 
-#### データセットディレクトリ
-
 ```text
 output_dir/
 ├ config.yml
@@ -200,8 +198,6 @@ output_dir/
 ├ ...
 ```
 
-この`output_dir`は、[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#データセットディレクトリ)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#データセットディレクトリ)の`dataset_dir`としてそのまま利用できます。
-
 シミュレーション条件を保存するため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。  
 各npzファイルの内容は以下のようになります。
 
@@ -214,6 +210,9 @@ output_dir/
 | orientation_tx | float32 | (3,)  | 送信機の向き [x, y, z]   |
 | pattern_rx     | str     | (ch_num,)  | 受信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
 | pattern_tx     | str     | ()  | 送信機の指向性パターン（`"heart"` / `"donut"` / `"uniform"`） |
+
+
+この`output_dir`は、[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#データセットディレクトリ)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#データセットディレクトリ)の`dataset_dir`としてそのまま利用できます。
 
 ---
 

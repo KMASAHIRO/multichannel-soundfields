@@ -154,7 +154,6 @@ python optuna_tuning.py \
 #### データセットディレクトリ
 
 `dataset_dir`に、以下のディレクトリ構成で多チャンネルインパルス応答の波形データを用意します。  
-[実データ](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/real_data#出力)または[AcoustiX](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AcoustiX#出力)、[Pyroomacoustics](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/Pyroomacoustics#出力)の出力をそのまま利用できます。
 
 ```text
 dataset_dir/

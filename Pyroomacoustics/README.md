@@ -54,7 +54,7 @@ python simulation.py \
   --config simu_input/config.yml \
   --speaker simu_input/speaker_data.json \
   --receiver simu_input/receiver_data.json \
-  --output_dir outputs
+  --output_dir output_dir
 ```
 
 ---
@@ -68,7 +68,7 @@ python simulation.py \
   --config simu_input/config.yml \            # シミュレーション設定ファイル
   --speaker simu_input/speaker_data.json \    # 送信機データファイル
   --receiver simu_input/receiver_data.json \  # 受信機データファイル
-  --output_dir outputs                        # 出力先ディレクトリ
+  --output_dir output_dir                     # 出力先ディレクトリ
 ```
 
 ### 入力
@@ -134,8 +134,6 @@ YAMLファイルで以下の内容を設定します。
 
 入力時に指定した出力先ディレクトリ`output_dir`に、以下の構成で出力します。
 
-#### データセットディレクトリ
-
 ```text
 output_dir/
 ├ config.yml
@@ -151,8 +149,6 @@ output_dir/
 ├ ...
 ```
 
-この`output_dir`は、[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#データセットディレクトリ)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#データセットディレクトリ)の`dataset_dir`としてそのまま利用できます。
-
 シミュレーション条件を保存するため、入力に使用した`config.yml`、`speaker_data.json`、`receiver_data.json`をコピーして出力先に保存します。
 各npzファイルの内容は以下のようになります。
 
@@ -161,3 +157,5 @@ output_dir/
 | ir             | float32 | (ch_num, ir_len)  | インパルス応答の波形      |
 | position_rx    | float32 | (ch_num, 3)  | 受信機位置 [x, y, z]  |
 | position_tx    | float32 | (3,)  | 送信機位置 [x, y, z]    |
+
+この`output_dir`は、[AVR](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR#データセットディレクトリ)や[NAF](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF#データセットディレクトリ)の`dataset_dir`としてそのまま利用できます。
