@@ -76,6 +76,7 @@ def build_criterion(cfg: dict) -> Criterion:
         "das_loss_weight": das_weight,
         "beta": param.get("softargmax_beta", 100.0),
         "das_n_fft": int(cfg.get("doa_metric", {}).get("n_fft", 512)),
+        "ch_num": int(setting["ch_num"]),
     }
 
     render_cfg = {"fs": setting["fs"], "speed": setting["speed"]}

@@ -19,6 +19,7 @@ class Criterion(nn.Module):
         self.das_loss_weight = cfg.get('das_loss_weight', 0.0)
         self.beta = cfg.get('beta', 100.0)
         self.n_fft = cfg.get('das_n_fft', 512)
+        self.ch_num = cfg.get('ch_num')
 
         # 360度分の角度 (ラジアン)
         self.angles_rad = torch.deg2rad(torch.arange(0.0, 360.0, 1.0))
@@ -32,30 +33,47 @@ class Criterion(nn.Module):
         self.l1_loss = torch.nn.L1Loss()
         self.mrft_loss = auraloss.freq.MultiResolutionSTFTLoss(w_lin_mag=1, fft_sizes=[512, 256, 128, 64], win_lengths=[300, 150, 75, 30], hop_sizes=[60, 30, 8, 4])
     
-    def compute_beamforming_power(self, sig, rx_positions):
+    def compute_beamforming_power(self, sig, rx_positions, ch_num):
         """
-        sig: 複素数 (B, M, F) or (M, F) or (B, F)
-        rx_positions: (B, M, 2/3) or (M, 2/3) or (B, 2/3)
+        sig: 複素数 (B, F) を基本想定（必要に応じて (B, M, F) も許容）
+        rx_positions: (B, 2/3) を基本想定（必要に応じて (B, M, 2/3) も許容）
         """
         if rx_positions is None:
             raise ValueError("rx_positions is required for DAS loss")
+        if ch_num is None or int(ch_num) <= 0:
+            raise ValueError(f"ch_num must be a positive integer, got {ch_num}")
+        ch_num = int(ch_num)
 
-        if sig.ndim == 2 and rx_positions.ndim == 2 and rx_positions.shape[0] == sig.shape[0] and rx_positions.shape[1] in (2, 3):
-            sig = sig.unsqueeze(1)
-            rx_positions = rx_positions.unsqueeze(1)
+        if sig.ndim == 2:
+            if rx_positions.ndim != 2 or rx_positions.shape[0] != sig.shape[0] or rx_positions.shape[1] not in (2, 3):
+                raise ValueError(
+                    f"When sig is (B, F), rx_positions must be (B, 2/3), got sig {tuple(sig.shape)}, rx_positions {tuple(rx_positions.shape)}"
+                )
+            b_total, f_dim = sig.shape
+            if b_total % ch_num != 0:
+                raise ValueError(
+                    f"B must be a multiple of ch_num for DAS grouping: B={b_total}, ch_num={ch_num}"
+                )
+            batch = b_total // ch_num
+            sig = sig.reshape(batch, ch_num, f_dim)
+            rx_positions = rx_positions.reshape(batch, ch_num, rx_positions.shape[-1])
+        elif sig.ndim == 3:
+            if rx_positions.ndim != 3 or rx_positions.shape[0] != sig.shape[0] or rx_positions.shape[1] != sig.shape[1]:
+                raise ValueError(
+                    f"When sig is (B, M, F), rx_positions must be (B, M, 2/3), got sig {tuple(sig.shape)}, rx_positions {tuple(rx_positions.shape)}"
+                )
+            if sig.shape[1] != ch_num:
+                raise ValueError(
+                    f"Channel dimension mismatch: expected M==ch_num ({ch_num}), got M={sig.shape[1]}"
+                )
+            if rx_positions.shape[-1] not in (2, 3):
+                raise ValueError(
+                    f"rx_positions last dim must be 2 or 3, got {rx_positions.shape[-1]}"
+                )
         else:
-            if sig.ndim == 2:
-                sig = sig.unsqueeze(0)
-            if rx_positions.ndim == 2:
-                rx_positions = rx_positions.unsqueeze(0)
-        if rx_positions.ndim == 1:
-            rx_positions = rx_positions.view(1, 1, -1)
-
-        if sig.ndim == 3 and sig.shape[1] != rx_positions.shape[1]:
-            if sig.shape[0] == rx_positions.shape[0] and rx_positions.shape[1] in (2, 3):
-                sig = sig.unsqueeze(1)
-            else:
-                raise ValueError("sig and rx_positions shape mismatch for DAS")
+            raise ValueError(
+                f"sig must be 2D (B, F) or 3D (B, M, F), got ndim={sig.ndim}, shape={tuple(sig.shape)}"
+            )
 
         B, M, _ = sig.shape
         time_sig = torch.real(torch.fft.irfft(sig, dim=-1))
@@ -120,8 +138,8 @@ class Criterion(nn.Module):
         das_loss = torch.tensor(0.0, device=pred_sig.device)
 
         if self.das_loss_weight > 0:
-            power_pred = self.compute_beamforming_power(pred_sig, rx_positions)  # (B, K)
-            power_ori = self.compute_beamforming_power(ori_sig, rx_positions)    # (B, K)
+            power_pred = self.compute_beamforming_power(pred_sig, rx_positions, self.ch_num)  # (B, K)
+            power_ori = self.compute_beamforming_power(ori_sig, rx_positions, self.ch_num)    # (B, K)
 
             weights_pred = torch.softmax(self.beta * power_pred, dim=-1)
             weights_ori = torch.softmax(self.beta * power_ori, dim=-1)

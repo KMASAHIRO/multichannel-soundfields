@@ -27,7 +27,6 @@ fixed:
   pixel_count: 2000
   grid_features: 64
   ch_num: 8
-  batch_norm: none
   activation_func_name: default
   grid_gap: 0.25
   bandwith_init: 0.25

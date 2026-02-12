@@ -99,8 +99,6 @@ def build_model(cfg, dataset, device):
         float_amt=cfg["position_float"],
         min_xy=min_xy,
         max_xy=max_xy,
-        batch_norm=cfg["batch_norm"],
-        batch_norm_features=cfg["pixel_count"],
         activation_func_name=cfg["activation_func_name"],
     ).to(device)
 
@@ -465,7 +463,6 @@ def run_training(config_path: str, data_dir: str, output_dir: str):
         "layers_residual": int(param.get("layers_residual", 1)),
         "features": int(param.get("features", 256)),
         "grid_features": int(param.get("grid_features", 64)),
-        "batch_norm": str(param.get("batch_norm", "none")),
         "activation_func_name": str(param.get("activation_func_name", "default")),
         "grid_gap": float(param.get("grid_gap", 0.25)),
         "bandwith_init": float(param.get("bandwith_init", 0.25)),

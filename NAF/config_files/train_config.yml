@@ -20,7 +20,6 @@ param:
   layers_residual: 1
   features: 256
   grid_features: 64
-  batch_norm: none
   activation_func_name: default
   grid_gap: 0.25
   bandwith_init: 0.25

@@ -29,7 +29,6 @@ class soundsamples(torch.utils.data.Dataset):
         self.pixel_count = cfg.pixel_count
         self.pos_reg_amt = cfg.reg_eps
         self.model_type = cfg.model_type
-        self.ch_num = 1 if self.model_type == "NAF" else cfg.ch_num
 
         self.magnitudes_path = os.path.join(self.data_dir, "magnitudes.h5")
         self.phases_path = os.path.join(self.data_dir, "phases.h5")

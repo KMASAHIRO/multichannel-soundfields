@@ -218,21 +218,21 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | study.study_name | avr_optuna | Optunaのstudy名 |
-| study.n_trials | 50 | 試行回数 |
+| study.n_trials | 50 | チューニングの試行回数 |
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
-| doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
-| doa_metric.fallback_value | 999.0 | 評価値が取得できない場合の代替値 |
+| doa_metric.n_fft | 512 | 音源方向推定時のSTFTの窓幅 |
+| doa_metric.fallback_value | 999.0 | 音源方向推定できない場合の代替値 |
 | setting.fs | 16000 | サンプリング周波数 [Hz] |
 | setting.speed | 343.8 | 音速 [m/s] |
-| setting.xyz_min | 0 | xyz座標の最小値 [m] |
-| setting.xyz_max | 10 | xyz座標の最大値 [m] |
+| setting.xyz_min | 0 | 部屋のxyz座標の最小値 [m] |
+| setting.xyz_max | 10 | 部屋のxyz座標の最大値 [m] |
 | setting.model_type | AVR | AVRのモデルタイプ（`AVR` / `AVR+` / `AVR++`） |
 | setting.ch_num | 8 | チャンネル数 |
 | setting.T_max | 8300 | 総学習ステップ数 |
 | setting.grad_clip_norm | 1 | 勾配クリップの大きさ |
 | setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 8 | 学習時のバッチサイズ |
-| setting.save_best_k | 10 | 評価指標が良い上位k個のモデルを保存 |
+| setting.save_best_k | 10 | 評価指標が良い上位何個のモデルを保存するか |
 | setting.val_freq | 166 | 検証データで評価する間隔（ステップ数） |
 | setting.load_workers | 4 | データ読み込み時の並列数 |
 | fixed.* | — | 固定するハイパーパラメータ（詳細は[学習設定ファイル](#学習設定ファイル)） |
@@ -341,19 +341,19 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
-| doa_metric.n_fft | 512 | DoA計算時のSTFTの窓幅 |
-| doa_metric.fallback_value | 999.0 | 評価値が取得できない場合の代替値 |
+| doa_metric.n_fft | 512 | 音源方向推定時のSTFTの窓幅 |
+| doa_metric.fallback_value | 999.0 | 音源方向推定できない場合の代替値 |
 | setting.fs | 16000 | サンプリング周波数 [Hz] |
 | setting.speed | 343.8 | 音速 [m/s] |
-| setting.xyz_min | 0 | xyz座標の最小値 [m] |
-| setting.xyz_max | 10 | xyz座標の最大値 [m] |
+| setting.xyz_min | 0 | 部屋のxyz座標の最小値 [m] |
+| setting.xyz_max | 10 | 部屋のxyz座標の最大値 [m] |
 | setting.model_type | AVR | AVRのモデルタイプ（`AVR` / `AVR+` / `AVR++`） |
 | setting.ch_num | 8 | チャンネル数 |
 | setting.T_max | 8300 | 総学習ステップ数 |
 | setting.grad_clip_norm | 1 | 勾配クリップの大きさ |
 | setting.resume | False | チェックポイントから再開するかどうか |
 | setting.batch_size | 8 | 学習時のバッチサイズ |
-| setting.save_best_k | 10 | 評価指標が良い上位k個のモデルを保存 |
+| setting.save_best_k | 10 | 評価指標が良い上位何個のモデルを保存するか |
 | setting.val_freq | 166 | 検証データで評価する間隔（ステップ数） |
 | setting.load_workers | 4 | データ読み込み時の並列数 |
 | param.near | 0 | r方向積分の下限 |
@@ -442,8 +442,8 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|
 | setting.fs | 16000 | サンプリング周波数 [Hz] |
 | setting.speed | 343.8 | 音速 [m/s] |
-| setting.xyz_min | 0 | xyz座標の最小値 [m] |
-| setting.xyz_max | 10 | xyz座標の最大値 [m] |
+| setting.xyz_min | 0 | 部屋のxyz座標の最小値 [m] |
+| setting.xyz_max | 10 | 部屋のxyz座標の最大値 [m] |
 | setting.model_type | AVR | AVRのモデルタイプ（`AVR` / `AVR+` / `AVR++`） |
 | setting.ch_num | 8 | チャンネル数 |
 | setting.batch_size | 8 | 推論時のバッチサイズ |

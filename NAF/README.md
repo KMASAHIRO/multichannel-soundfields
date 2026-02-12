@@ -228,8 +228,8 @@ NAFのモデルタイプにおける`NAF+`は、`NAF`を多チャンネルデー
 | n_fft | 512 | STFTの窓幅 |
 | hop_size | 128 | STFTのhop size |
 | window | hann | 窓関数（`hamming` / `gaussian` / `boxcar` など（[詳細](https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.get_window.html)）） |
-| log_eps | 1e-3 | log計算のエラーを防ぐための微小値 |
-| mag_std_eps | 0.1 | 振幅の標準偏差計算時の微小値 |
+| log_eps | 1e-3 | logの引数が0になるのを防ぐための微小値 |
+| mag_std_eps | 0.1 | 振幅の正規化時にゼロ除算を防ぐための微小値 |
 
 ---
 
@@ -273,18 +273,18 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | study.study_name | naf_plus_optuna | Optunaのstudy名 |
-| study.n_trials | 50 | 試行回数 |
+| study.n_trials | 50 | チューニングの試行回数 |
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
-| doa_metric.fallback_value | 999.0 | 評価値が取得できない場合の代替値 |
+| doa_metric.fallback_value | 999.0 | 音源方向推定できない場合の代替値 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.ch_num | 8 | チャンネル数 |
-| setting.xy_min | [0, 0] | xy座標の最小値 [m] |
-| setting.xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
+| setting.xy_min | [0, 0] | 部屋のxy座標の最小値 [m] |
+| setting.xy_max | [6.110, 8.807] | 部屋のxy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
 | setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 20 | 学習時のバッチサイズ |
-| setting.save_best_k | 10 | 評価指標が良い上位k個のモデルを保存 |
+| setting.save_best_k | 10 | 評価指標が良い上位何個のモデルを保存するか |
 | fixed.* | — | 固定するハイパーパラメータ（詳細は[学習設定ファイル](#学習設定ファイル)） |
 | search_space.* | — | チューニングするハイパーパラメータ（詳細は[学習設定ファイル](#学習設定ファイル)） |
 | search_space.*.type | — | 探索タイプの指定（`int` / `float` / `categorical`） |
@@ -384,17 +384,17 @@ YAMLファイルで以下の内容を設定します。
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | setting.ch_num | 8 | チャンネル数 |
-| setting.xy_min | [0, 0] | xy座標の最小値 [m] |
-| setting.xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
+| setting.xy_min | [0, 0] | 部屋のxy座標の最小値 [m] |
+| setting.xy_max | [6.110, 8.807] | 部屋のxy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
 | setting.resume | True | チェックポイントから再開するかどうか |
 | setting.batch_size | 20 | 学習時のバッチサイズ |
-| setting.save_best_k | 10 | 評価指標が良い上位k個のモデルを保存 |
+| setting.save_best_k | 10 | 評価指標が良い上位何個のモデルを保存するか |
 | param.mag_alpha | 1.0 | 振幅の損失項係数 |
 | param.phase_alpha | 1.0 | 位相の損失項係数 |
 | param.lr_init | 1.0e-3 | 初期学習率 |
 | param.lr_decay | 1.0e-1 | 学習率減衰係数 |
-| param.weight_decay_grid | 1.0e-2 | グリッドパラメータ（gridが名前に入るパラメータ）に対するweight decay |
+| param.weight_decay_grid | 1.0e-2 | グリッドパラメータ（座標情報を表すパラメータ）に対するweight decay |
 | param.weight_decay_main | 0.0 | グリッドパラメータ以外のパラメータに対するweight decay |
 | param.reg_eps | 0.05 | 学習時に位置に加える微小値 |
 | param.pixel_count | 2000 | 一度に計算するスペクトログラムのピクセル数 |
@@ -470,8 +470,8 @@ YAMLファイルで以下の内容を設定します。
 |---|---|---|
 | model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
 | ch_num | 8 | チャンネル数 |
-| xy_min | [0, 0] | xy座標の最小値 [m] |
-| xy_max | [6.110, 8.807] | xy座標の最大値 [m] |
+| xy_min | [0, 0] | 部屋のxy座標の最小値 [m] |
+| xy_max | [6.110, 8.807] | 部屋のxy座標の最大値 [m] |
 | layers | 8 | MLPの総レイヤ数 |
 | layers_residual | 1 | Residualブロック数 |
 | features | 256 | 各レイヤの隠れ特徴量次元 |

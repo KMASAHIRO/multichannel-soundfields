@@ -67,8 +67,6 @@ def build_model(cfg, min_xy, max_xy, device):
         float_amt=cfg["position_float"],
         min_xy=min_xy,
         max_xy=max_xy,
-        batch_norm="none",
-        batch_norm_features=cfg["pixel_count"],
         activation_func_name=cfg["activation_func_name"],
     ).to(device)
 
