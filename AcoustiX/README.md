@@ -134,9 +134,15 @@ YAMLファイルで以下の内容を設定します。
 
 シーンはXMLとPLYで構成します。Blenderで作成し、Mitsuba形式でエクスポートします。
 
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体シーンは[Google Drive](https://drive.google.com/drive/folders/1h1R4gZKTwJghD0qsZyB5vbckLi2LphX3)からダウンロードできます。  
-Drive内のフォルダ構成を保ったまま配置してください。  
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、`6.11×8.807×2.7 [m]`の直方体シーンは以下のコマンドでダウンロードできます。ディレクトリ構成を保ったまま配置してください。  
 自作する場合は[シーンを自作する場合](#シーンを自作する場合)を参照してください。
+
+```
+curl -L -o simu_input/AcoustiX_room.zip \
+  https://github.com/KMASAHIRO/multichannel-soundfields/releases/download/v0.1.0/AcoustiX_room.zip
+
+unzip simu_input/AcoustiX_room.zip -d simu_input
+```
 
 <img width="1920" height="1094" alt="scene_on_paper" src="https://github.com/user-attachments/assets/1f749054-2d83-4fad-9c19-3c918ee8b450" />
 

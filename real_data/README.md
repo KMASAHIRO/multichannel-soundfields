@@ -1,9 +1,9 @@
 # real_data
 
-実データのダウンロード、整形
-
-[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、下図のようなグリッド上に配置された8ch円形マイクロフォンアレイの測定データを整形します。  
-各測定ではスピーカーを1台のみ使用し、グリッド上の他の点にマイクロフォンアレイを配置して計測しています。
+実データセットのダウンロードと整形を行います。  
+[論文](https://www.jstage.jst.go.jp/article/jsaisigtwo/2025/Challenge-068/2025_03/_article/-char/ja)で使用した、8ch円形マイクロフォンアレイで測定したインパルス応答データセットです。  
+下図のグリッド上 4 × 6 = 24 個の配置点の内、橙点8か所をスピーカー候補位置とし、1回の測定ではそのうち1か所にスピーカーを配置しました。残り23か所にマイクロフォンアレイを配置して記録し、これをスピーカー候補位置8か所それぞれで行いました。こうして作成した、8 × 23 = 184 個の多チャンネルインパルス応答データセットです。
+データセットの詳細は[Releases](https://github.com/KMASAHIRO/multichannel-soundfields/releases/tag/v0.1.0)を参照してください。
 
 <img width="500" height="426" alt="room_dim" src="https://github.com/user-attachments/assets/049b55de-3061-4ea8-bdd7-519d04ef4a4a" />
 
