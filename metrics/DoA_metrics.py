@@ -1,33 +1,8 @@
 from typing import Optional, Tuple
 
+import librosa
 import numpy as np
 import pyroomacoustics as pra
-from scipy.signal import get_window
-
-
-def _stft(
-    signal: np.ndarray,
-    n_fft: int,
-    hop: Optional[int] = None,
-    window: str = "hann",
-) -> np.ndarray:
-    if hop is None:
-        hop = n_fft // 2
-    win = get_window(window, n_fft, fftbins=True)
-    pad = max(0, n_fft - signal.shape[-1])
-    if pad > 0:
-        signal = np.pad(signal, (0, pad))
-    frames = 1 + (signal.shape[-1] - n_fft) // hop if signal.shape[-1] >= n_fft else 1
-    stft = np.zeros((n_fft // 2 + 1, frames), dtype=np.complex64)
-    for i in range(frames):
-        s = i * hop
-        e = s + n_fft
-        frame = signal[s:e]
-        if frame.shape[0] < n_fft:
-            frame = np.pad(frame, (0, n_fft - frame.shape[0]))
-        spectrum = np.fft.rfft(frame * win, n=n_fft)
-        stft[:, i] = spectrum
-    return stft
 
 
 def _resolve_algorithm(name: str):
@@ -50,10 +25,15 @@ def _estimate_doa_deg(
     window: str = "hann",
     speed: float = 343.8,
 ) -> float:
-    dim = rx_pos.shape[1]
     mic = rx_pos.T  # (dim, M)
-    stfts = [_stft(ch, n_fft, hop=hop_size, window=window) for ch in ir]
-    X = np.stack(stfts, axis=0)  # (M, F, T)
+    hop = hop_size if hop_size is not None else n_fft // 2
+    X = librosa.stft(
+        ir,
+        n_fft=n_fft,
+        hop_length=hop,
+        window=window,
+        center=True,
+    ).astype(np.complex64)  # (M, F, T)
     if not np.isfinite(X).all():
         return float("nan")
 
@@ -65,10 +45,8 @@ def _estimate_doa_deg(
         return float("nan")
 
     if algorithm.upper() == "FRIDA":
-        deg = float(np.argmax(np.abs(doa._gen_dirty_img())))
-    else:
-        deg = float(np.argmax(doa.grid.values))
-    return deg
+        return float(np.argmax(np.abs(doa._gen_dirty_img())))
+    return float(np.argmax(doa.grid.values))
 
 
 def _ensure_shapes(
