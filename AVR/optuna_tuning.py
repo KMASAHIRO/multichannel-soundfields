@@ -1,4 +1,5 @@
 import argparse
+from copy import deepcopy
 from pathlib import Path
 import yaml
 import optuna
@@ -37,17 +38,18 @@ def set_nested(cfg: dict, key: str, value):
 
 def build_trial_config(base_cfg: dict, trial: optuna.trial.Trial) -> dict:
     trial_cfg = {
-        "setting": dict(base_cfg.get("setting", {})),
-        "param": dict(base_cfg.get("param", {})),
-        "model": dict(base_cfg.get("model", {})),
-        "doa_metric": dict(base_cfg.get("doa_metric", {})),
+        "setting": deepcopy(base_cfg["setting"]),
+        # param is intentionally constructed only from fixed/search_space.
+        "param": {},
+        "model": deepcopy(base_cfg["model"]),
+        "doa_metric": deepcopy(base_cfg["doa_metric"]),
     }
 
-    fixed = base_cfg.get("fixed", {})
+    fixed = base_cfg["fixed"]
     for key, val in fixed.items():
         set_nested(trial_cfg, key, val)
 
-    search = base_cfg.get("search_space", {})
+    search = base_cfg["search_space"]
     for key, spec in search.items():
         stype = spec.get("type")
         if stype == "int":

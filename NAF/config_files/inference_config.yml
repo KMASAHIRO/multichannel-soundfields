@@ -1,11 +1,15 @@
 model_param:
   model_type: NAF+
   ch_num: 8
-  xy_min: [0, 0]
-  xy_max: [6.110, 8.807]
-  layers: 8
-  layers_residual: 1
-  features: 256
+  xy_min:
+    - 0
+    - 0
+  xy_max:
+    - 6.110
+    - 8.807
+  layers: 6
+  layers_residual: 2
+  features: 1024
   grid_features: 64
   activation_func_name: default
   grid_gap: 0.25
@@ -13,7 +17,7 @@ model_param:
   position_float: 0.1
   min_bandwidth: 0.1
   max_bandwidth: 0.5
-  pixel_count: 2000
+  pixel_count: 627
   embed_xyz_num_freqs: 10
   embed_xyz_max_freq: 7
   embed_time_num_freqs: 10

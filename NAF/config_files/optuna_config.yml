@@ -12,7 +12,7 @@ setting:
   model_type: NAF+
   ch_num: 8
   epochs: 50
-  resume: False
+  resume: True
   batch_size: 20
   save_best_k: 10
 
@@ -24,7 +24,6 @@ fixed:
   mag_alpha: 1.0
   weight_decay_grid: 1.0e-2
   weight_decay_main: 0.0
-  pixel_count: 2000
   grid_features: 64
   ch_num: 8
   activation_func_name: default
@@ -39,6 +38,12 @@ fixed:
   embed_time_max_freq: 10
   embed_freq_num_freqs: 10
   embed_freq_max_freq: 10
+  xy_min:
+    - 0
+    - 0
+  xy_max:
+    - 6.110
+    - 8.807
   save_best_k: 10
 
 search_space:
@@ -52,7 +57,12 @@ search_space:
     high: 3
   features:
     type: categorical
-    choices: [64, 128, 256, 512, 1024]
+    choices:
+      - 64
+      - 128
+      - 256
+      - 512
+      - 1024
   reg_eps:
     type: float
     low: 0.0
@@ -65,12 +75,12 @@ search_space:
     type: float
     low: 1.0e-5
     high: 1.0e-2
-    log: true
+    log: True
   lr_decay:
     type: float
     low: 5.0e-2
     high: 5.0e-1
-    log: true
+    log: True
   phase_alpha:
     type: float
     low: 0.1

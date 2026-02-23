@@ -2,23 +2,23 @@ setting:
   gpus: 1
   model_type: NAF+
   ch_num: 8
-  epochs: 200
-  resume: False
+  epochs: 50
+  resume: True
   batch_size: 20
   save_best_k: 10
 
 param:
   mag_alpha: 1.0
-  phase_alpha: 1.0
-  lr_init: 1.0e-3
-  lr_decay: 1.0e-1
+  phase_alpha: 0.7661073441672404
+  lr_init: 0.00033227729957306895
+  lr_decay: 0.13423637920822107
   weight_decay_grid: 1.0e-2
   weight_decay_main: 0.0
-  reg_eps: 0.05
-  pixel_count: 2000
-  layers: 8
-  layers_residual: 1
-  features: 256
+  reg_eps: 0.1236700170496434
+  pixel_count: 627
+  layers: 6
+  layers_residual: 2
+  features: 1024
   grid_features: 64
   activation_func_name: default
   grid_gap: 0.25
@@ -32,8 +32,12 @@ param:
   embed_time_max_freq: 10
   embed_freq_num_freqs: 10
   embed_freq_max_freq: 10
-  xy_min: [0, 0]
-  xy_max: [6.110, 8.807]
+  xy_min:
+    - 0
+    - 0
+  xy_max:
+    - 6.110
+    - 8.807
 
 doa_metric:
   algorithm: NormMUSIC
