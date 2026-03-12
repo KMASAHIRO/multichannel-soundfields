@@ -280,7 +280,7 @@ YAMLファイルで以下の内容を設定します。
 | doa_metric.fallback_value | 999.0 | 音源方向推定できない場合の代替値 |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | NAF+ | NAFのモデルタイプ（`NAF` / `NAF+`） |
-| setting.ch_num | 8 | チャンネル数 |
+| setting.ch_num | 8 | チャンネル数（`model_type`が`NAF+`のときのみ） |
 | setting.xy_min | [0, 0] | 部屋のxy座標の最小値 [m] |
 | setting.xy_max | [6.110, 8.807] | 部屋のxy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
@@ -386,7 +386,7 @@ YAMLファイルで以下の内容を設定します。
 | doa_metric.algorithm | NormMUSIC | 音源方向推定アルゴリズム（`MUSIC` / `SRP` など（[詳細](https://pyroomacoustics.readthedocs.io/en/pypi-release/pyroomacoustics.doa.html)）） |
 | setting.gpus | 4 | 学習に使用するGPU数 |
 | setting.model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
-| setting.ch_num | 8 | チャンネル数 |
+| setting.ch_num | 8 | チャンネル数（`model_type`が`NAF+`のときのみ） |
 | setting.xy_min | [0, 0] | 部屋のxy座標の最小値 [m] |
 | setting.xy_max | [6.110, 8.807] | 部屋のxy座標の最大値 [m] |
 | setting.epochs | 200 | 学習エポック数 |
@@ -472,7 +472,7 @@ YAMLファイルで以下の内容を設定します。
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
 | model_type | `NAF+` | NAFのモデルタイプ（`NAF` / `NAF+`） |
-| ch_num | 8 | チャンネル数 |
+| ch_num | 8 | チャンネル数（`model_type`が`NAF+`のときのみ） |
 | xy_min | [0, 0] | 部屋のxy座標の最小値 [m] |
 | xy_max | [6.110, 8.807] | 部屋のxy座標の最大値 [m] |
 | layers | 8 | MLPの総レイヤ数 |

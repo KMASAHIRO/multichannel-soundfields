@@ -1,0 +1,75 @@
+doa_metric:
+  algorithm: NormMUSIC
+  n_fft: 512
+  fallback_value: 999.0
+
+setting:
+  fs: 16000
+  speed: 343.8
+  xyz_min: 0
+  xyz_max: 10
+  model_type: AVR
+  ch_num: 8
+  T_max: 16600
+  grad_clip_norm: 1
+  resume: True
+  batch_size: 8
+  save_best_k: 10
+  val_freq: 332
+  load_workers: 4
+
+param:
+  near: 0
+  far: 6
+  n_samples: 75
+  n_azi: 60
+  n_ele: 32
+  pathloss: 1.5
+  lr: 1.3875935747507567e-06
+  eta_min: 1.8163606321000903e-08
+  weight_decay: 0.0009364463338419016
+  spec_loss_weight: 94.77249344914622
+  amplitude_loss_weight: 4
+  angle_loss_weight: 88.35912894288984
+  time_loss_weight: 51.53528238162438
+  energy_loss_weight: 98.81545044569972
+  multistft_loss_weight: 95.13785571645835
+
+model:
+  signal_output_dim: 1600
+  pos_encoding_sigma:
+    otype: HashGrid
+    n_levels: 20
+    n_features_per_level: 2
+    log2_hashmap_size: 18
+    base_resolution: 16
+  dir_encoding_sig:
+    otype: HashGrid
+    n_levels: 20
+    n_features_per_level: 2
+    log2_hashmap_size: 18
+    base_resolution: 16
+  tx_encoding_sig:
+    otype: HashGrid
+    n_levels: 20
+    n_features_per_level: 2
+    log2_hashmap_size: 18
+    base_resolution: 16
+  sigma_encoder_network:
+    otype: CutlassMLP
+    activation: ReLU
+    output_activation: None
+    n_hidden_layers: 3
+    n_neurons: 32
+  sigma_decoder_network:
+    otype: CutlassMLP
+    activation: ReLU
+    output_activation: None
+    n_hidden_layers: 3
+    n_neurons: 512
+  signal_network:
+    otype: CutlassMLP
+    activation: ReLU
+    output_activation: None
+    n_hidden_layers: 3
+    n_neurons: 128
