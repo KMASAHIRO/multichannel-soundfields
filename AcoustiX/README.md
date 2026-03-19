@@ -59,7 +59,7 @@ cd multichannel-soundfields/AcoustiX
 pip install -r requirements.txt
 ```
 
-3. シーンファイルのダウンロード（自作シーンを使用する場合はスキップ）
+3. シーンファイルのダウンロード（自作シーンやAI生成シーンを使用する場合はスキップ）
 
 ```bash
 curl -L -o simu_input/AcoustiX_room.zip \
