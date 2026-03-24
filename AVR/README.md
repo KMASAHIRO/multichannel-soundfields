@@ -37,7 +37,8 @@ AVR/
 ├ config_files/                 各種設定ファイル（YAML）
 │  ├ optuna_config.yml            ハイパラチューニングの設定ファイル
 │  ├ train_config.yml             学習の設定ファイル
-│  └ inference_config.yml         推論の設定ファイル
+│  ├ inference_config.yml         推論の設定ファイル
+│  └ best_train_config_for_each_dataset/    各データセットでチューニングした学習パラメータ
 ├ preprocess/                   前処理
 │  └ split_train_val.py           学習データと検証データの分割
 ├ utils/
@@ -339,7 +340,8 @@ python train.py \
 
 YAMLファイルで以下の内容を設定します。  
 具体的な書き方は[`train_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/AVR/config_files/train_config.yml)を参照してください。  
-`param.`と`model.`で始まる項目（`signal_output_dim`以外）は[ハイパラチューニング](#ハイパラチューニング)でチューニング可能なパラメータです。
+`param.`と`model.`で始まる項目（`signal_output_dim`以外）は[ハイパラチューニング](#ハイパラチューニング)でチューニング可能なパラメータです。  
+また、各データセットでチューニングした学習パラメータを[`config_files/best_train_config_for_each_dataset`](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/AVR/config_files/best_train_config_for_each_dataset)にまとめてあります。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|

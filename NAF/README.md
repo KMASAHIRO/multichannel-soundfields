@@ -37,7 +37,8 @@ NAF/
 │  ├ preprocess_config.yml        前処理の設定ファイル
 │  ├ optuna_config.yml            ハイパラチューニングの設定ファイル
 │  ├ train_config.yml             学習の設定ファイル
-│  └ inference_config.yml         推論の設定ファイル
+│  ├ inference_config.yml         推論の設定ファイル
+│  └ best_train_config_for_each_dataset/    各データセットでチューニングした学習パラメータ
 ├ preprocess/                   前処理
 │  ├ split_train_val.py           学習データと検証データの分割
 │  └ preprocess.py                前処理（STFTなど）
@@ -379,7 +380,8 @@ python train.py \
 
 YAMLファイルで以下の内容を設定します。  
 具体的な書き方は[`train_config.yml`](https://github.com/KMASAHIRO/multichannel-soundfields/blob/main/NAF/config_files/train_config.yml)を参照してください。  
-`param.`で始まる項目は[ハイパラチューニング](#ハイパラチューニング)でチューニング可能なパラメータです。
+`param.`で始まる項目は[ハイパラチューニング](#ハイパラチューニング)でチューニング可能なパラメータです。  
+また、各データセットでチューニングした学習パラメータを[`config_files/best_train_config_for_each_dataset`](https://github.com/KMASAHIRO/multichannel-soundfields/tree/main/NAF/config_files/best_train_config_for_each_dataset)にまとめてあります。
 
 | 項目 | デフォルト値 | 説明 |
 |---|---|---|
